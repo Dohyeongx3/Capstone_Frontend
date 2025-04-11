@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 import 'login.dart';
 import 'register.dart';
-import 'IDfind.dart';
 
-class Initregister extends StatefulWidget {
-  const Initregister({super.key});
-
+// 예시 약관 페이지
+class TermsOfServicePage extends StatelessWidget {
   @override
-  State<Initregister> createState() => _InitregisterState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('이용약관')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text('여기에 이용약관 내용을 입력하세요.'),
+      ),
+    );
+  }
 }
 
-class _InitregisterState extends State<Initregister> with SingleTickerProviderStateMixin {
+class Onboard extends StatefulWidget {
+  const Onboard({super.key});
+
+  @override
+  State<Onboard> createState() => _OnboardState();
+}
+
+class _OnboardState extends State<Onboard> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
 
@@ -41,14 +55,14 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
   void navigateToLogin() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Login()), // 기존 Login 위젯으로 이동
+      MaterialPageRoute(builder: (context) => Login()),
     );
   }
 
   void navigateToRegister() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Register()), // 기존 Register 위젯으로 이동
+      MaterialPageRoute(builder: (context) => Register()),
     );
   }
 
@@ -58,17 +72,17 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          const Spacer(flex: 1), // 화면 상단 여백 조정
+          const Spacer(flex: 1),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/icon1.png', // 이미지 경로
-                  width: 100, // 원하는 크기로 조절 가능
+                  'assets/icon1.png',
+                  width: 100,
                   height: 130,
                 ),
-                const SizedBox(height: 1), // 이미지와 텍스트 사이 간격 조정
+                const SizedBox(height: 1),
                 const Text(
                   'Safety And Management',
                   style: TextStyle(
@@ -80,9 +94,7 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
               ],
             ),
           ),
-          const Spacer(flex: 4), // 화면 하단 여백 조정 (비율 조정 가능)
-
-          // 애니메이션을 통해 올라오는 로그인 화면
+          const Spacer(flex: 4),
           SlideTransition(
             position: _slideAnimation,
             child: Container(
@@ -98,12 +110,12 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start, // 텍스트와 이미지를 왼쪽에 붙여 배치
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Image.asset(
-                          'assets/icon2.png', // 두 번째 이미지 로고
+                          'assets/icon2.png',
                           width: 80,
                           height: 80,
                         ),
@@ -115,11 +127,10 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // 검은색 회원가입 버튼
                   ElevatedButton(
-                    onPressed: navigateToRegister, // 로그인 버튼 클릭 시 Register 위젯으로 이동
+                    onPressed: navigateToRegister,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // 버튼 배경 색상 설정
+                      backgroundColor: Colors.black,
                       fixedSize: const Size(500, 50),
                     ),
                     child: const Text(
@@ -128,12 +139,11 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // 연한 회색 로그인 버튼
                   ElevatedButton(
-                    onPressed: navigateToLogin, // 로그인 버튼 클릭 시 Login 위젯으로 이동
+                    onPressed: navigateToLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[300], // 연한 회색 배경 색상 설정
-                      foregroundColor: Colors.black, // 텍스트 색상 설정
+                      backgroundColor: Colors.grey[300],
+                      foregroundColor: Colors.black,
                       fixedSize: const Size(500, 50),
                     ),
                     child: const Text(
@@ -142,42 +152,65 @@ class _InitregisterState extends State<Initregister> with SingleTickerProviderSt
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // 소셜 로그인 버튼들 (이미지 버튼으로 변경)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // 카카오 로그인 버튼 크기 조정
                       ElevatedButton(
                         onPressed: () {
                           // 카카오 로그인 동작
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent, // 배경을 투명으로 설정
-                          shadowColor: Colors.transparent, // 그림자 제거
-                          padding: const EdgeInsets.all(0), // 기본 패딩 제거
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.all(0),
                         ),
-                        child: Image.asset('assets/kakao.png', width: 200, height: 50), // 크기 조정
+                        child: Image.asset('assets/kakao.png', width: 200, height: 50),
                       ),
                       const SizedBox(width: 20),
-                      // 네이버 로그인 버튼 크기 조정
                       ElevatedButton(
                         onPressed: () {
                           // 네이버 로그인 동작
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent, // 배경을 투명으로 설정
-                          shadowColor: Colors.transparent, // 그림자 제거
-                          padding: const EdgeInsets.all(0), // 기본 패딩 제거
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.all(0),
                         ),
-                        child: Image.asset('assets/naver.png', width: 200, height: 50), // 크기 조정
+                        child: Image.asset('assets/naver.png', width: 200, height: 50),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // 이용약관 동의 텍스트
-                  const Text(
-                    '계속 진행함에 따라 Safety And Management의 이용약관에 동의합니다.',
-                    style: TextStyle(fontSize: 9, color: Colors.grey),
+                  // 수정된 이용약관 문구 (이용약관만 버튼)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: '로그인 하시면 Safety And Management의 ',
+                        style: TextStyle(fontSize: 9, color: Colors.grey),
+                        children: [
+                          TextSpan(
+                            text: '이용약관',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => TermsOfServicePage()),
+                                );
+                              },
+                          ),
+                          TextSpan(
+                            text: '에 동의하는 것으로 간주합니다.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

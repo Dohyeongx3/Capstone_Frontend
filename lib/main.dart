@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'initregister.dart';
+import 'onboard.dart';
 import 'login.dart';
 import 'register.dart';
-import 'IDfind.dart';
+import 'IDPWfind.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Initregister()),
+        MaterialPageRoute(builder: (context) => const Onboard()),
       );
     });
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'register.dart';
-import 'initregister.dart';
-import 'IDfind.dart';
+import 'onboard.dart';
+import 'IDPWfind.dart';
+// import 'home.dart'; // 실제 홈 화면이 있다면 여기에 import
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -15,13 +16,23 @@ class _LoginState extends State<Login> {
   bool _obscureText = true;
   bool _autoLogin = false;
 
-  @override
-
-  void navigateToIDfind() {
+  // 아이디/비밀번호 찾기 페이지로 이동
+  void navigateToIDPWFind(bool isIdFind) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Idfind()), // Idfind 위젯으로 이동
+      MaterialPageRoute(
+        builder: (context) => IDPWfind(isIdFindSelected: isIdFind),
+      ),
     );
+  }
+
+  // 임시 홈 화면으로 이동
+  void navigateToHome() {
+    // 실제 홈 위젯이 있다면 이 부분 수정
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('홈 화면으로 이동하는 임시 버튼입니다.')),
+    );
+    // 예: Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
@@ -41,7 +52,7 @@ class _LoginState extends State<Login> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back), // 뒤로가기 버튼 아이콘
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
             FocusScope.of(context).unfocus();
             Navigator.pop(context);
@@ -99,10 +110,10 @@ class _LoginState extends State<Login> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // DB 연결하여 로그인 로직 추가
+                  // 로그인 로직 구현 예정
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: const Color(0xFF00BB6D),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -113,21 +124,38 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            // 임시 홈 이동 버튼
+            SizedBox(
+              width: double.infinity,
+              height: 45,
+              child: ElevatedButton(
+                onPressed: navigateToHome,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[400],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+                child: Text(
+                  "임시 홈 이동 버튼",
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: navigateToIDfind,
+                  onPressed: () => navigateToIDPWFind(true),
                   child: Text("아이디 찾기"),
                 ),
                 SizedBox(width: 20),
                 Text("|"),
                 SizedBox(width: 20),
                 TextButton(
-                  onPressed: () {
-                    // 비밀번호 찾기 페이지 이동
-                  },
+                  onPressed: () => navigateToIDPWFind(false),
                   child: Text("비밀번호 찾기"),
                 ),
               ],
