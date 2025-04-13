@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'register.dart';
 import 'onboard.dart';
 import 'IDPWfind.dart';
-// import 'home.dart'; // 실제 홈 화면이 있다면 여기에 import
+import 'home.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -28,11 +28,12 @@ class _LoginState extends State<Login> {
 
   // 임시 홈 화면으로 이동
   void navigateToHome() {
-    // 실제 홈 위젯이 있다면 이 부분 수정
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('홈 화면으로 이동하는 임시 버튼입니다.')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Home(),
+      ),
     );
-    // 예: Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override

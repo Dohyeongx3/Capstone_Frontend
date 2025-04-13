@@ -164,7 +164,7 @@ class _OnboardState extends State<Onboard> with SingleTickerProviderStateMixin {
                           shadowColor: Colors.transparent,
                           padding: const EdgeInsets.all(0),
                         ),
-                        child: Image.asset('assets/kakao.png', width: 200, height: 50),
+                        child: Image.asset('assets/kakao.png', width: 180, height: 50),
                       ),
                       const SizedBox(width: 20),
                       ElevatedButton(
@@ -176,7 +176,7 @@ class _OnboardState extends State<Onboard> with SingleTickerProviderStateMixin {
                           shadowColor: Colors.transparent,
                           padding: const EdgeInsets.all(0),
                         ),
-                        child: Image.asset('assets/naver.png', width: 200, height: 50),
+                        child: Image.asset('assets/naver.png', width: 180, height: 50),
                       ),
                     ],
                   ),
