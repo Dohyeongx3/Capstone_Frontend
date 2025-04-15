@@ -1,8 +1,8 @@
-import 'package:disasterescape/setting.dart';
 import 'package:flutter/material.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
+import 'setting.dart';
 
 class Info extends StatefulWidget {
   const Info({Key? key}) : super(key: key);
@@ -194,8 +194,8 @@ class _InfoState extends State<Info> {
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
+      backgroundColor: Colors.transparent,
       onTap: _onItemTapped,
-      type: BottomNavigationBarType.fixed,
     );
   }
 }

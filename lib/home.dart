@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:disasterescape/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
@@ -8,6 +7,7 @@ import 'escape.dart';
 import 'group.dart';
 import 'info.dart';
 import 'login.dart';
+import 'setting.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);

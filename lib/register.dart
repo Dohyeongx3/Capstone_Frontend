@@ -202,6 +202,7 @@ class _RegisterState extends State<Register> {
                 child: ElevatedButton(
                   onPressed: () {
                     // 가입하기 로직
+                    // DB에 회원정보 전송
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BB6D),

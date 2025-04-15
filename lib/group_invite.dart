@@ -38,7 +38,7 @@ class GroupInvite extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const Text(
-                '그룹 (Family)',
+                '그룹 (Name)',
                 style: TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 16),

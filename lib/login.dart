@@ -56,7 +56,10 @@ class _LoginState extends State<Login> {
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             FocusScope.of(context).unfocus();
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Onboard()), // 온보딩 화면으로 이동
+            );
           },
         ),
       ),
@@ -112,6 +115,7 @@ class _LoginState extends State<Login> {
               child: ElevatedButton(
                 onPressed: () {
                   // 로그인 로직 구현 예정
+                  // DB에서 회원 정보 매칭 후 로그인
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00BB6D),
