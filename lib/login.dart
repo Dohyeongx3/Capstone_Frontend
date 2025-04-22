@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'register.dart';
 import 'onboard.dart';
@@ -16,22 +18,63 @@ class _LoginState extends State<Login> {
   bool _obscureText = true;
   bool _autoLogin = false;
 
-  // 아이디/비밀번호 찾기 페이지로 이동
-  void navigateToIDPWFind(bool isIdFind) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => IDPWfind(isIdFindSelected: isIdFind),
-      ),
-    );
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _pwController = TextEditingController();
+
+  Future<void> loginUser() async {
+    final id = _idController.text.trim();
+    final pw = _pwController.text.trim();
+
+    if (id.isEmpty || pw.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => const AlertDialog(
+          content: Text("아이디와 비밀번호를 입력해주세요."),
+        ),
+      );
+      return;
+    }
+
+    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/login'); // 주소 수정
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userId': id, 'password': pw}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success']) {
+          // 로그인 성공
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        } else {
+          _showErrorDialog(data['message'] ?? '로그인 실패');
+        }
+      } else {
+        _showErrorDialog('서버 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showErrorDialog('서버와 연결할 수 없습니다.');
+    }
   }
 
-  // 임시 홈 화면으로 이동
-  void navigateToHome() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Home(),
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('오류'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('확인'),
+          ),
+        ],
       ),
     );
   }
@@ -40,7 +83,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           '로그인',
           style: TextStyle(
             color: Colors.black,
@@ -51,37 +94,39 @@ class _LoginState extends State<Login> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             FocusScope.of(context).unfocus();
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const Onboard()), // 온보딩 화면으로 이동
+              MaterialPageRoute(builder: (context) => const Onboard()),
             );
           },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('개인회원', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
-            SizedBox(height: 20),
+            const Text('개인회원', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+            const SizedBox(height: 20),
             TextField(
-              decoration: InputDecoration(
+              controller: _idController,
+              decoration: const InputDecoration(
                 labelText: '아이디',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             TextField(
+              controller: _pwController,
               obscureText: _obscureText,
               decoration: InputDecoration(
                 labelText: '비밀번호',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -94,7 +139,7 @@ class _LoginState extends State<Login> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Row(
               children: [
                 Checkbox(
@@ -105,63 +150,65 @@ class _LoginState extends State<Login> {
                     });
                   },
                 ),
-                Text("자동 로그인"),
+                const Text("자동 로그인"),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  // 로그인 로직 구현 예정
-                  // DB에서 회원 정보 매칭 후 로그인
-                },
+                onPressed: loginUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00BB6D),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "로그인하기",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            // 임시 홈 이동 버튼
+            const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               height: 45,
               child: ElevatedButton(
-                onPressed: navigateToHome,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Home()));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[400],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "임시 홈 이동 버튼",
                   style: TextStyle(fontSize: 14, color: Colors.white),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: () => navigateToIDPWFind(true),
-                  child: Text("아이디 찾기"),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const IDPWfind(isIdFindSelected: true)));
+                  },
+                  child: const Text("아이디 찾기"),
                 ),
-                SizedBox(width: 20),
-                Text("|"),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
+                const Text("|"),
+                const SizedBox(width: 20),
                 TextButton(
-                  onPressed: () => navigateToIDPWFind(false),
-                  child: Text("비밀번호 찾기"),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const IDPWfind(isIdFindSelected: false)));
+                  },
+                  child: const Text("비밀번호 찾기"),
                 ),
               ],
             ),
