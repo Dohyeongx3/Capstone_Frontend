@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:wifi_scan/wifi_scan.dart';
+import 'package:http/http.dart' as http;
 
 class Escape extends StatefulWidget {
-  final int selectedIndex;  // 부모의 selectedIndex를 전달받음
+  final int selectedIndex;
 
   const Escape({Key? key, required this.selectedIndex}) : super(key: key);
 
@@ -12,15 +15,48 @@ class Escape extends StatefulWidget {
 class _EscapeState extends State<Escape> {
   final String locationName = '대구광역시 달서구 달구벌대로 1095 계명대학교 성서캠퍼스 공학1호관';
   final String coordinates = 'X: 35.854026 / Y: 128.491114 / Z: (1층)';
-
-  // Escape 화면에서 선택된 인덱스를 변경할 수 있는 변수
   int _currentSelectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // 부모 화면에서 받은 selectedIndex를 초기값으로 설정
     _currentSelectedIndex = widget.selectedIndex;
+    _scanAndSendWiFiData(); // Wi-Fi 정보 스캔 및 전송
+  }
+
+  Future<void> _scanAndSendWiFiData() async {
+    final canScan = await WiFiScan.instance.canStartScan();
+    if (canScan != CanStartScan.yes) {
+      print("WiFi 스캔 불가: $canScan");
+      return;
+    }
+
+    await WiFiScan.instance.startScan();
+    final List<WiFiAccessPoint> results = await WiFiScan.instance.getScannedResults();
+
+    final apList = results.map((ap) => {
+      "SSID": ap.ssid,
+      "BSSID": ap.bssid,
+      "RSSI": ap.level,
+    }).toList();
+
+    print("스캔된 AP: $apList");
+
+    try {
+      final response = await http.post(
+        Uri.parse(""), // 여기 서버 주소 넣으시면 되요
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"ap_data": apList}),
+      );
+
+      if (response.statusCode == 200) {
+        print("서버 전송 성공");
+      } else {
+        print("서버 오류: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("서버 전송 실패: $e");
+    }
   }
 
   @override
@@ -29,7 +65,6 @@ class _EscapeState extends State<Escape> {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            // 부모 화면에 변경된 selectedIndex 값을 전달
             Navigator.pop(context, _currentSelectedIndex);
           },
         ),
@@ -44,7 +79,6 @@ class _EscapeState extends State<Escape> {
       ),
       body: Stack(
         children: [
-          // 지도 영역 (아직 미완성)
           Container(
             color: Colors.grey[300],
             child: const Center(
@@ -54,7 +88,6 @@ class _EscapeState extends State<Escape> {
               ),
             ),
           ),
-          // 온보딩 시트
           DraggableScrollableSheet(
             initialChildSize: 0.3,
             minChildSize: 0.3,

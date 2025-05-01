@@ -80,7 +80,7 @@ class _SettingState extends State<Setting> {
           const Spacer(),
           const Icon(Icons.search, color: Colors.black),
           const SizedBox(width: 10),
-          const Icon(Icons.notifications, color: Colors.black),
+          const Icon(Icons.notifications_outlined),
         ],
       ),
     );
@@ -236,18 +236,19 @@ class _SettingState extends State<Setting> {
   // BottomNavigationBar 설정
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-        BottomNavigationBarItem(icon: Icon(Icons.description), label: '재난정보'),
-        BottomNavigationBarItem(icon: Icon(Icons.location_on), label: '대피경로'),
-        BottomNavigationBarItem(icon: Icon(Icons.people), label: '그룹'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: '설정'),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.grey,
-      backgroundColor: Colors.transparent,
-      onTap: _onItemTapped,
+    type: BottomNavigationBarType.fixed,
+    items: const [
+    BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: '홈'),
+    BottomNavigationBarItem(icon: Icon(Icons.description_outlined), label: '재난정보'),
+    BottomNavigationBarItem(icon: Icon(Icons.location_on_outlined), label: '대피경로'),
+    BottomNavigationBarItem(icon: Icon(Icons.people_outline), label: '그룹'),
+    BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: '설정'),
+    ],
+    currentIndex: _selectedIndex,
+    selectedItemColor: Colors.black,
+    unselectedItemColor: Colors.grey,
+    backgroundColor: Colors.white,
+    onTap: _onItemTapped,
     );
   }
 }

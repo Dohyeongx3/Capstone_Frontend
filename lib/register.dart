@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'onboard.dart';
+
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -13,7 +15,9 @@ class _RegisterState extends State<Register> {
   bool _obscureConfirmPassword = true;
 
   final _nameController = TextEditingController();
-  final _birthController = TextEditingController();
+  final _yearController = TextEditingController();
+  final _monthController = TextEditingController();
+  final _dayController = TextEditingController();
   final _idController = TextEditingController();
   final _pwController = TextEditingController();
   final _confirmPwController = TextEditingController();
@@ -44,7 +48,7 @@ class _RegisterState extends State<Register> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: _currentStep == 0 ? _buildStepOne() : _buildStepTwo(),
+        child: _currentStep == 0 ? _buildStepOne() : _currentStep == 1 ? _buildStepTwo() : _buildSuccessStep(),
       ),
     );
   }
@@ -56,7 +60,7 @@ class _RegisterState extends State<Register> {
         const Text(
           '반가워요! 이름과 생년월일을 알려주세요.',
           style: TextStyle(
-            color: Color(0xFF00BB6D),
+            color: Color(0xFF0073FF),
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
@@ -73,14 +77,49 @@ class _RegisterState extends State<Register> {
           ),
         ),
         const SizedBox(height: 40),
-        TextField(
-          controller: _birthController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: '생년월일',
-            hintText: '생년월일 8자리 입력해주세요',
-            border: OutlineInputBorder(),
-          ),
+        const Text('생년월일', style: TextStyle(fontSize: 16)),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: TextField(
+                controller: _yearController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '년',
+                  hintText: 'YYYY',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _monthController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '월',
+                  hintText: 'MM',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _dayController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '일',
+                  hintText: 'DD',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
         ),
         const Spacer(),
         SizedBox(
@@ -93,7 +132,7 @@ class _RegisterState extends State<Register> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00BB6D),
+              backgroundColor: const Color(0xFF0073FF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
               ),
@@ -140,7 +179,7 @@ class _RegisterState extends State<Register> {
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             labelText: '비밀번호',
-            hintText: '비밀번호를 입력해주세요',
+            hintText: '비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자 사용',
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
               icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
@@ -183,7 +222,7 @@ class _RegisterState extends State<Register> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BB6D),
+                    backgroundColor: const Color(0xFF0073FF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -201,11 +240,54 @@ class _RegisterState extends State<Register> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    // 가입하기 로직
-                    // DB에 회원정보 전송
+                    // 모든 필드 입력 여부 확인
+                    if (_nameController.text.isEmpty ||
+                        _yearController.text.isEmpty ||
+                        _monthController.text.isEmpty ||
+                        _dayController.text.isEmpty ||
+                        _idController.text.isEmpty ||
+                        _pwController.text.isEmpty ||
+                        _confirmPwController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('모든 필드를 입력해주세요.')),
+                      );
+                      return;
+                    }
+
+                    // 아이디 길이 검사
+                    if (_idController.text.length < 5 || _idController.text.length > 13) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('아이디는 5~13자여야 합니다.')),
+                      );
+                      return;
+                    }
+
+                    // 비밀번호 정규식 검사: 8~16자, 영문 대/소문자 + 숫자 + 특수문자
+                    final password = _pwController.text;
+                    final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,16}$');
+
+                    if (!passwordRegex.hasMatch(password)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.')),
+                      );
+                      return;
+                    }
+
+                    // 비밀번호 일치 확인
+                    if (_pwController.text != _confirmPwController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')),
+                      );
+                      return;
+                    }
+                    // 가입 처리 로직 여기 적어주시면 되요 (서버 전송 및 DB에 회원정보 전송)
+                    // 가입 성공 화면으로 전환
+                    setState(() {
+                      _currentStep = 2;
+                    });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BB6D),
+                    backgroundColor: const Color(0xFF0073FF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -218,6 +300,63 @@ class _RegisterState extends State<Register> {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSuccessStep() {
+    return Column(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/success.png',
+                width: 150,
+                height: 150,
+              ),
+              const SizedBox(height: 30),
+              Text(
+                "${_nameController.text}님 가입이 완료되었습니다!",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0073FF),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "SAM과 함께 안전한 하루를 시작해보세요.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF0073FF),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Onboard()));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0073FF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(7),
+              ),
+            ),
+            child: const Text(
+              "홈으로",
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+          ),
         ),
       ],
     );
