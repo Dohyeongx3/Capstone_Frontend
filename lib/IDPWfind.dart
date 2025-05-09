@@ -130,10 +130,9 @@ class _IDPWfindState extends State<IDPWfind> {
               // 아이디 찾기 로직
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00BB6D),
+              backgroundColor: const Color(0xFF0073FF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
-                side: const BorderSide(color: Color(0xFF00BB6D), width: 2),
               ),
             ),
             child: const Text(
@@ -195,10 +194,9 @@ class _IDPWfindState extends State<IDPWfind> {
               // 비밀번호 재설정 로직
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00BB6D),
+              backgroundColor: const Color(0xFF0073FF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
-                side: const BorderSide(color: Color(0xFF00BB6D), width: 2),
               ),
             ),
             child: const Text(

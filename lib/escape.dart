@@ -13,9 +13,11 @@ class Escape extends StatefulWidget {
 }
 
 class _EscapeState extends State<Escape> {
-  final String locationName = '대구광역시 달서구 달구벌대로 1095 계명대학교 성서캠퍼스 공학1호관';
-  final String coordinates = 'X: 35.854026 / Y: 128.491114 / Z: (1층)';
+  final String locationName = '대구광역시 달서구 달구벌대로 1095 계명대학교 성서캠퍼스 공학1호관';   //실험 장소가 1호관이라 이렇게 적었습니다.
+  final String coordinates = 'X: 35.854026 / Y: 128.491114 / Z: (1층)';                    // AP로 위치 특정하면 여기 값 갱신하면 돼요.
   int _currentSelectedIndex = 0;
+
+  List<Map<String, dynamic>> _apList = [];
 
   @override
   void initState() {
@@ -42,9 +44,13 @@ class _EscapeState extends State<Escape> {
 
     print("스캔된 AP: $apList");
 
+    setState(() {
+      _apList = apList;
+    });
+
     try {
       final response = await http.post(
-        Uri.parse(""), // 여기 서버 주소 넣으시면 되요
+        Uri.parse(""), // 서버 주소
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"ap_data": apList}),
       );
@@ -81,11 +87,32 @@ class _EscapeState extends State<Escape> {
         children: [
           Container(
             color: Colors.grey[300],
-            child: const Center(
-              child: Text(
-                '실내지도 영역',
-                style: TextStyle(fontSize: 24, color: Colors.black54),
-              ),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                const Text(
+                  '실내지도 영역',
+                  style: TextStyle(fontSize: 24, color: Colors.black54),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: _apList.length,
+                    itemBuilder: (context, index) {
+                      final ap = _apList[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          leading: const Icon(Icons.wifi),
+                          title: Text("SSID: ${ap['SSID']}"),
+                          subtitle: Text("BSSID: ${ap['BSSID']}\nRSSI: ${ap['RSSI']}"),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           DraggableScrollableSheet(
