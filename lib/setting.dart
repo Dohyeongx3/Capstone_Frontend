@@ -97,8 +97,9 @@ class _SettingState extends State<Setting> {
           Row(
             children: [
               // 프로필 이미지
-              ClipOval(
-                child: Icon(Icons.person)
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage('assets/default_profile.png'),
               ),
               const SizedBox(width: 16),
               // 사용자 이름과 기본 정보 보기
