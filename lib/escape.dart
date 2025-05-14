@@ -16,6 +16,8 @@ class _EscapeState extends State<Escape> {
   final String locationName = '대구광역시 달서구 달구벌대로 1095 계명대학교 성서캠퍼스 공학1호관';   //실험 장소가 1호관이라 이렇게 적었습니다.
   final String coordinates = 'X: 35.854026 / Y: 128.491114 / Z: (1층)';                    // AP로 위치 특정하면 여기 값 갱신하면 돼요.
   int _currentSelectedIndex = 0;
+  final DraggableScrollableController _sheetController = DraggableScrollableController();
+  bool _isExpanded = true;
 
   List<Map<String, dynamic>> _apList = [];
 
@@ -43,6 +45,9 @@ class _EscapeState extends State<Escape> {
     }).toList();
 
     print("스캔된 AP: $apList");
+
+    // 신호 세기(RSSI) 기준으로 내림차순 정렬
+    apList.sort((a, b) => ((b['RSSI'] ?? 0) as int).compareTo((a['RSSI'] ?? 0) as int));
 
     setState(() {
       _apList = apList;
@@ -116,9 +121,10 @@ class _EscapeState extends State<Escape> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.3,
-            minChildSize: 0.3,
-            maxChildSize: 0.8,
+            controller: _sheetController,
+            initialChildSize: 0.43,
+            minChildSize: 0.1,
+            maxChildSize: 0.43,
             builder: (context, scrollController) {
               return Container(
                 padding: const EdgeInsets.all(16),
@@ -138,6 +144,36 @@ class _EscapeState extends State<Escape> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              margin: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(_isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up),
+                            onPressed: () {
+                              setState(() {
+                                _isExpanded = !_isExpanded;
+                              });
+
+                              _sheetController.animateTo(
+                                _isExpanded ? 0.45 : 0.1,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                       Center(
                         child: Container(
                           width: 40,

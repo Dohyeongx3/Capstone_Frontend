@@ -69,6 +69,11 @@ class _GroupState extends State<Group> {
     },
   ];
 
+  final List<Map<String, dynamic>> groups = [
+    {'name': '그룹1', 'members': 4},
+    {'name': '그룹2', 'members': 6},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,228 +114,267 @@ class _GroupState extends State<Group> {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '마이 프로필',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
+    return SingleChildScrollView(
+      child:Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '마이 프로필',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0073FF),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 왼쪽: 상태 + 이름 + 이메일
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0073FF),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 왼쪽: 상태 + 이름 + 이메일
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                '안전', // 위험일 경우 '위험'
+                                style: TextStyle(
+                                  color: Color(0xFF00BB6D), // 위험: Color(0xFFFF6200)
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
-                            child: const Text(
-                              '안전', // 위험일 경우 '위험'
+                            const SizedBox(height: 10),
+                            const Text(
+                              '사용자 이름',
                               style: TextStyle(
-                                color: Color(0xFF00BB6D), // 위험: Color(0xFFFF6200)
+                                color: Colors.white,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'abc123@gmail.com',
+                              style: TextStyle(
+                                color: Colors.white70,
                                 fontSize: 12,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            '사용자 이름',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'abc123@gmail.com',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // 오른쪽: 프로필 이미지
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/default_profile.png'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(color: Colors.white),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Text(
-                      '초대코드 | ABC123',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.copy, size: 18, color: Colors.white),
-                      onPressed: () {
-                        Clipboard.setData(const ClipboardData(text: 'ABC123')); // 복사
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('초대코드가 복사되었습니다'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // 아래 위험 상태 멤버 섹션
-          const SizedBox(height: 32),
-          const Text(
-            '현재 위험 상태 멤버',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: dangerMembers.map((member) {
-                final String? name = member['name'];
-                final String? image = member['image'];
-                final bool isMissing = name == null;
-
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    clipBehavior: Clip.none,
-                    children: [
-                      // 아바타
-                      CircleAvatar(
-                        radius: 45,
-                        backgroundColor: image != null ? Colors.transparent : Colors.grey,
-                        backgroundImage: image != null ? AssetImage(image) : null,
-                        child: image == null
-                            ? const Icon(Icons.close, color: Colors.white)
-                            : null,
-                      ),
-
-                      // 이름 태그
-                      Positioned(
-                        bottom: -10, // 아바타 아래로 겹치게 위치 조정
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: isMissing ? const Color(0xFF676767) : const Color(0xFFFF6200),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            name ?? '없음',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                            ),
-                          ),
+                          ],
                         ),
+                      ),
+                      // 오른쪽: 프로필 이미지
+                      const CircleAvatar(
+                        radius: 30,
+                        backgroundImage: AssetImage('assets/default_profile.png'),
                       ),
                     ],
                   ),
-                );
-              }).toList(),
-            ),
-          ),
-
-          // 전체 그룹 섹션
-          const SizedBox(height: 32),
-          const Text(
-            '전체 그룹',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const GroupInvite()),
-              );
-            },
-            child: Container(
-              // 사용자가 크기와 높이를 직접 지정
-              width: 400,
-              height: 150,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5), // 배경색 설정
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Stack(
-                children: [
-                  // 왼쪽 상단에 "추가" 텍스트
-                  Positioned(
-                    top: 7,
-                    left: 7,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF676767),
-                        borderRadius: BorderRadius.circular(4), // 작은 둥근네모
-                      ),
-                      child: const Text(
-                        '추가',
+                  const SizedBox(height: 16),
+                  const Divider(color: Colors.white),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Text(
+                        '초대코드 | ABC123',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
-                    ),
-                  ),
-                  // + 아이콘을 가운데에 배치
-                  const Center(
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.grey,
-                      size: 36, // 아이콘 크기
-                    ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.copy, size: 18, color: Colors.white),
+                        onPressed: () {
+                          Clipboard.setData(const ClipboardData(text: 'ABC123')); // 복사
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('초대코드가 복사되었습니다'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+
+            // 아래 위험 상태 멤버 섹션
+            const SizedBox(height: 32),
+            const Text(
+              '현재 위험 상태 멤버',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: dangerMembers.map((member) {
+                  final String? name = member['name'];
+                  final String? image = member['image'];
+                  final bool isMissing = name == null;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 아바타
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: image != null ? Colors.transparent : Colors.grey,
+                          backgroundImage: image != null ? AssetImage(image) : null,
+                          child: image == null
+                              ? const Icon(Icons.close, color: Colors.white)
+                              : null,
+                        ),
+
+                        // 이름 태그
+                        Positioned(
+                          bottom: -10, // 아바타 아래로 겹치게 위치 조정
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: isMissing ? const Color(0xFF676767) : const Color(0xFFFF6200),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              name ?? '없음',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            // 전체 그룹 섹션
+            const SizedBox(height: 32),
+            const Text(
+              '전체 그룹',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                // 추가 버튼 카드
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const GroupInvite()),
+                    );
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF676767),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              '추가',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Center(
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.grey,
+                            size: 36,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 그룹 카드들
+                ...groups.map((group) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F0FF),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.blueAccent),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          group['name'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${group['members']}명 참여 중',
+                          style: const TextStyle(fontSize: 12, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
