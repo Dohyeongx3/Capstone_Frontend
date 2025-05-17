@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.safetyandmanagement">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -38,7 +39,7 @@
             android:value="2" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="8j69e3z4nm" />
+            android:value="eifb6wuhtj" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

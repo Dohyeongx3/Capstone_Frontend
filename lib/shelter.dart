@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
+import 'main.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
@@ -41,12 +42,6 @@ class _ShelterState extends State<Shelter> {
   }
 
   Future<void> _initializeNaverMap() async {
-    await NaverMapSdk.instance.initialize(
-      clientId: '8j69e3z4nm',
-      onAuthFailed: (ex) {
-        print("네이버맵 인증 오류: $ex");
-      },
-    );
     setState(() {
       _isMapInitialized = true;
     });
@@ -219,7 +214,7 @@ class _ShelterState extends State<Shelter> {
                 ),
                 onMapReady: (controller) {
                   _mapController = controller;
-                  print("네이버맵 준비 완료");
+                  print("네이버 맵 로딩됨!");
                 },
               )
                   : const Center(child: CircularProgressIndicator()),

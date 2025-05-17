@@ -12,7 +12,7 @@
         <!-- 네이버 지도 클라이언트 ID 등록 -->
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="8j69e3z4nm" />
+            android:value="eifb6wuhtj" />
 
         <!-- 필요시 위치 권한 foreground service -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>

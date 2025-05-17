@@ -1,13 +1,28 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 import 'onboard.dart';
 import 'login.dart';
 import 'register.dart';
 import 'IDPWfind.dart';
+import 'shelter.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await _NaverMapinitialize();
+  runApp(MyApp());
+}
+
+// 지도 초기화하기
+Future<void> _NaverMapinitialize() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterNaverMap().init(
+    clientId: 'eifb6wuhtj',
+    onAuthFailed: (ex) {
+      print("네이버맵 인증 오류: ${ex.code} - ${ex.message}");
+    },
+  );
 }
 
 class MyApp extends StatelessWidget {

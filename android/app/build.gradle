@@ -27,14 +27,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
         release {
             signingConfig = signingConfigs.debug
         }
     }
-}
-
-dependencies {
-    implementation 'com.naver.maps:map-sdk:3.13.0'
 }
 
 flutter {
