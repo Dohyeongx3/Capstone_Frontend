@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -112,7 +115,8 @@ class _RegisterState extends State<Register> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('회원 정보 입력 (2/2)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+        const Text('회원 정보 입력 (2/2)',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
         const SizedBox(height: 40),
         TextField(
           controller: _idController,
@@ -143,7 +147,8 @@ class _RegisterState extends State<Register> {
             hintText: '비밀번호를 입력해주세요',
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
-              icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+              icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility),
               onPressed: () {
                 setState(() {
                   _obscurePassword = !_obscurePassword;
@@ -161,7 +166,8 @@ class _RegisterState extends State<Register> {
             hintText: '비밀번호를 한번 더 입력해주세요',
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
-              icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+              icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons
+                  .visibility),
               onPressed: () {
                 setState(() {
                   _obscureConfirmPassword = !_obscureConfirmPassword;
@@ -200,10 +206,56 @@ class _RegisterState extends State<Register> {
               child: SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // 가입하기 로직
-                    // DB에 회원정보 전송
+                  onPressed: () async {
+                    final name = _nameController.text.trim();
+                    final birth = _birthController.text.trim();
+                    final userId = _idController.text.trim();
+                    final password = _pwController.text.trim();
+                    final confirmPassword = _confirmPwController.text.trim();
+
+                    // 비밀번호와 비밀번호 확인이 일치하는지 확인
+                    if (password != confirmPassword) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')),
+                      );
+                      return;
+                    }
+
+                    // 서버로 회원가입 요청
+                    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/register');
+
+                    try {
+                      final response = await http.post(
+                        url,
+                        headers: {'Content-Type': 'application/json'},
+                        body: jsonEncode({
+                          'userId': userId,
+                          'password': password,
+                          'name': name,
+                          'birth': birth,
+                        }),
+                      );
+
+                      if (response.statusCode == 201) {
+                        // 회원가입 성공
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('회원가입 성공!')),
+                        );
+                        Navigator.pop(context); // 또는 로그인 화면 등으로 이동
+                      } else {
+                        // 회원가입 실패
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('회원가입 실패: ${response.body}')),
+                        );
+                      }
+                    } catch (e) {
+                      print('회원가입 요청 실패: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('서버 연결 실패')),
+                      );
+                    }
                   },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00BB6D),
                     shape: RoundedRectangleBorder(
