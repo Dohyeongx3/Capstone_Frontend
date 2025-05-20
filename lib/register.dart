@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'onboard.dart';
 
@@ -239,8 +241,8 @@ class _RegisterState extends State<Register> {
               child: SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // 모든 필드 입력 여부 확인
+                  onPressed: () async {
+                    // 입력값 확인
                     if (_nameController.text.isEmpty ||
                         _yearController.text.isEmpty ||
                         _monthController.text.isEmpty ||
@@ -254,7 +256,6 @@ class _RegisterState extends State<Register> {
                       return;
                     }
 
-                    // 아이디 길이 검사
                     if (_idController.text.length < 5 || _idController.text.length > 13) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('아이디는 5~13자여야 합니다.')),
@@ -262,8 +263,8 @@ class _RegisterState extends State<Register> {
                       return;
                     }
 
-                    // 비밀번호 정규식 검사: 8~16자, 영문 대/소문자 + 숫자 + 특수문자
-                    final password = _pwController.text;
+                    final password = _pwController.text.trim();
+                    final confirmPassword = _confirmPwController.text.trim();
                     final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,16}$');
 
                     if (!passwordRegex.hasMatch(password)) {
@@ -273,18 +274,51 @@ class _RegisterState extends State<Register> {
                       return;
                     }
 
-                    // 비밀번호 일치 확인
-                    if (_pwController.text != _confirmPwController.text) {
+                    if (password != confirmPassword) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')),
                       );
                       return;
                     }
-                    // 가입 처리 로직 여기 적어주시면 되요 (서버 전송 및 DB에 회원정보 전송)
-                    // 가입 성공 화면으로 전환
-                    setState(() {
-                      _currentStep = 2;
-                    });
+
+                    // 서버로 전송할 값 준비
+                    final name = _nameController.text.trim();
+                    final birth = '${_yearController.text.trim()}-${_monthController.text.trim().padLeft(2, '0')}-${_dayController.text.trim().padLeft(2, '0')}';
+                    final userId = _idController.text.trim();
+
+                    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/register');
+
+                    try {
+                      final response = await http.post(
+                        url,
+                        headers: {'Content-Type': 'application/json'},
+                        body: jsonEncode({
+                          'userId': userId,
+                          'password': password,
+                          'name': name,
+                          'birth': birth,
+                        }),
+                      );
+
+                      if (response.statusCode == 201) {
+                        // 성공 시 완료 화면으로 이동
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('회원가입 성공!')),
+                        );
+                        setState(() {
+                          _currentStep = 2;
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('회원가입 실패: ${response.body}')),
+                        );
+                      }
+                    } catch (e) {
+                      print('회원가입 요청 실패: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('서버 연결 실패')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0073FF),
