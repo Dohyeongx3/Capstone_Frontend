@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 
+import 'onboard.dart';
+
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -16,7 +18,9 @@ class _RegisterState extends State<Register> {
   bool _obscureConfirmPassword = true;
 
   final _nameController = TextEditingController();
-  final _birthController = TextEditingController();
+  final _yearController = TextEditingController();
+  final _monthController = TextEditingController();
+  final _dayController = TextEditingController();
   final _idController = TextEditingController();
   final _pwController = TextEditingController();
   final _confirmPwController = TextEditingController();
@@ -47,7 +51,7 @@ class _RegisterState extends State<Register> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: _currentStep == 0 ? _buildStepOne() : _buildStepTwo(),
+        child: _currentStep == 0 ? _buildStepOne() : _currentStep == 1 ? _buildStepTwo() : _buildSuccessStep(),
       ),
     );
   }
@@ -59,7 +63,7 @@ class _RegisterState extends State<Register> {
         const Text(
           '반가워요! 이름과 생년월일을 알려주세요.',
           style: TextStyle(
-            color: Color(0xFF00BB6D),
+            color: Color(0xFF0073FF),
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
@@ -76,14 +80,49 @@ class _RegisterState extends State<Register> {
           ),
         ),
         const SizedBox(height: 40),
-        TextField(
-          controller: _birthController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: '생년월일',
-            hintText: '생년월일 8자리 입력해주세요',
-            border: OutlineInputBorder(),
-          ),
+        const Text('생년월일', style: TextStyle(fontSize: 16)),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: TextField(
+                controller: _yearController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '년',
+                  hintText: 'YYYY',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _monthController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '월',
+                  hintText: 'MM',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _dayController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '일',
+                  hintText: 'DD',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
         ),
         const Spacer(),
         SizedBox(
@@ -96,7 +135,7 @@ class _RegisterState extends State<Register> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00BB6D),
+              backgroundColor: const Color(0xFF0073FF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
               ),
@@ -144,7 +183,7 @@ class _RegisterState extends State<Register> {
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             labelText: '비밀번호',
-            hintText: '비밀번호를 입력해주세요',
+            hintText: '비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자 사용',
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
               icon: Icon(
@@ -189,7 +228,7 @@ class _RegisterState extends State<Register> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BB6D),
+                    backgroundColor: const Color(0xFF0073FF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -207,20 +246,54 @@ class _RegisterState extends State<Register> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    final name = _nameController.text.trim();
-                    final birth = _birthController.text.trim();
-                    final userId = _idController.text.trim();
-                    final password = _pwController.text.trim();
-                    final confirmPassword = _confirmPwController.text.trim();
+                    // 모든 필드 입력 여부 확인
+                    if (_nameController.text.isEmpty ||
+                        _yearController.text.isEmpty ||
+                        _monthController.text.isEmpty ||
+                        _dayController.text.isEmpty ||
+                        _idController.text.isEmpty ||
+                        _pwController.text.isEmpty ||
+                        _confirmPwController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('모든 필드를 입력해주세요.')),
+                      );
+                      return;
+                    }
 
-                    // 비밀번호와 비밀번호 확인이 일치하는지 확인
-                    if (password != confirmPassword) {
+                    // 아이디 길이 검사
+                    final userId = _idController.text.trim();
+                    if (userId.length < 5 || userId.length > 13) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('아이디는 5~13자여야 합니다.')),
+                      );
+                      return;
+                    }
+
+                    // 비밀번호 정규식 검사: 8~16자, 영문 대/소문자 + 숫자 + 특수문자
+                    final password = _pwController.text.trim();
+                    final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,16}$');
+
+                    if (!passwordRegex.hasMatch(password)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요.')),
+                      );
+                      return;
+                    }
+
+                    // 비밀번호 일치 확인
+                    final passwordCheck = _confirmPwController.text.trim();
+                    if (password != passwordCheck) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')),
                       );
                       return;
                     }
 
+                    final name = _nameController.text.trim();
+                    final year = _yearController.text.trim();
+                    final month = _monthController.text.trim();
+                    final day = _dayController.text.trim();
+                    
                     // 서버로 회원가입 요청
                     final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/register');
 
@@ -232,7 +305,9 @@ class _RegisterState extends State<Register> {
                           'userId': userId,
                           'password': password,
                           'name': name,
-                          'birth': birth,
+                          'year': year,
+                          'month': month,
+                          'day': day
                         }),
                       );
 
@@ -257,7 +332,7 @@ class _RegisterState extends State<Register> {
                   },
 
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BB6D),
+                    backgroundColor: const Color(0xFF0073FF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
                     ),
@@ -270,6 +345,63 @@ class _RegisterState extends State<Register> {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSuccessStep() {
+    return Column(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/success.png',
+                width: 150,
+                height: 150,
+              ),
+              const SizedBox(height: 30),
+              Text(
+                "${_nameController.text}님 가입이 완료되었습니다!",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0073FF),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "SAM과 함께 안전한 하루를 시작해보세요.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF0073FF),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Onboard()));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0073FF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(7),
+              ),
+            ),
+            child: const Text(
+              "홈으로",
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+          ),
         ),
       ],
     );

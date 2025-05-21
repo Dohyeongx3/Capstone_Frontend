@@ -160,7 +160,7 @@ class _LoginState extends State<Login> {
               child: ElevatedButton(
                 onPressed: loginUser,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00BB6D),
+                  backgroundColor: const Color(0xFF0073FF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -199,7 +199,7 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const IDPWfind(isIdFindSelected: true)));
                   },
-                  child: const Text("아이디 찾기"),
+                  child: const Text("아이디 찾기", style: TextStyle(color: Colors.black),),
                 ),
                 const SizedBox(width: 20),
                 const Text("|"),
@@ -208,7 +208,7 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const IDPWfind(isIdFindSelected: false)));
                   },
-                  child: const Text("비밀번호 찾기"),
+                  child: const Text("비밀번호 찾기", style: TextStyle(color: Colors.black),),
                 ),
               ],
             ),

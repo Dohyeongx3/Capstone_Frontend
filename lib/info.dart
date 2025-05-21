@@ -78,7 +78,7 @@ class _InfoState extends State<Info> {
           Spacer(),
           Icon(Icons.search, color: Colors.black),
           SizedBox(width: 10),
-          Icon(Icons.notifications, color: Colors.black),
+          const Icon(Icons.notifications_outlined),
         ],
       ),
     );
@@ -183,19 +183,54 @@ class _InfoState extends State<Info> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-        BottomNavigationBarItem(icon: Icon(Icons.description), label: '재난정보'),
-        BottomNavigationBarItem(icon: Icon(Icons.location_on), label: '대피경로'),
-        BottomNavigationBarItem(icon: Icon(Icons.people), label: '그룹'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: '설정'),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.grey,
-      backgroundColor: Colors.transparent,
-      onTap: _onItemTapped,
+    return SizedBox(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 실제 bottomNavigationBar 영역
+          BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: '홈'),
+              BottomNavigationBarItem(icon: Icon(Icons.description_outlined), label: '재난정보'),
+              BottomNavigationBarItem(
+                icon: Opacity(opacity: 0, child: Icon(Icons.circle)), // 높이 맞춤용 숨겨진 아이콘
+                label: '대피경로',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.people_outline), label: '그룹'),
+              BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: '설정'),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.white,
+            onTap: _onItemTapped,
+          ),
+
+          // 여기서 이미지와 상호작용할 수 있도록 GestureDetector 사용
+          Positioned(
+            top: -25, // 위로 튀어나오도록 위치 조절
+            left: MediaQuery.of(context).size.width / 2 - 30, // 가운데 정렬
+            child: GestureDetector(
+              onTap: () {
+                _onItemTapped(2); // 대피경로 화면으로 이동
+              },
+              child: Container(
+                width: 60,
+                height: 60,
+                color: Colors.transparent, // 터치 영역 확장
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/escapebutton.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
