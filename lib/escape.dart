@@ -39,15 +39,15 @@ class _EscapeState extends State<Escape> {
     final List<WiFiAccessPoint> results = await WiFiScan.instance.getScannedResults();
 
     final apList = results.map((ap) => {
-      "SSID": ap.ssid,
-      "BSSID": ap.bssid,
-      "RSSI": ap.level,
+      "ssid": ap.ssid,
+      "bssid": ap.bssid,
+      "level": ap.level,
     }).toList();
 
     print("스캔된 AP: $apList");
 
     // 신호 세기(RSSI) 기준으로 내림차순 정렬
-    apList.sort((a, b) => ((b['RSSI'] ?? 0) as int).compareTo((a['RSSI'] ?? 0) as int));
+    apList.sort((a, b) => ((b['level'] ?? 0) as int).compareTo((a['level'] ?? 0) as int));
 
     setState(() {
       _apList = apList;
@@ -55,9 +55,9 @@ class _EscapeState extends State<Escape> {
 
     try {
       final response = await http.post(
-        Uri.parse(""), // 서버 주소
+        Uri.parse("https://python-server-code-production.up.railway.app/locate"), // 서버 주소
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"ap_data": apList}),
+        body: jsonEncode({"apList": apList}),
       );
 
       if (response.statusCode == 200) {
@@ -110,8 +110,8 @@ class _EscapeState extends State<Escape> {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: ListTile(
                           leading: const Icon(Icons.wifi),
-                          title: Text("SSID: ${ap['SSID']}"),
-                          subtitle: Text("BSSID: ${ap['BSSID']}\nRSSI: ${ap['RSSI']}"),
+                          title: Text("SSID: ${ap['ssid']}"),
+                          subtitle: Text("BSSID: ${ap['bssid']}\nRSSI: ${ap['level']}"),
                         ),
                       );
                     },

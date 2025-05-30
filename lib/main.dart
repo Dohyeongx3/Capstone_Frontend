@@ -10,7 +10,7 @@ import 'IDPWfind.dart';
 import 'shelter.dart';
 
 void main() async {
-  await _NaverMapinitialize();
+  await _NaverMapinitialize();     //웹에서 테스트 하고 싶으면 이부분 /*await _NaverMapinitialize();*/ 이렇게 주석처리 하고 돌리면 됩니다.
   runApp(MyApp());
 }
 

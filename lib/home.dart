@@ -144,7 +144,7 @@ class _HomeState extends State<Home> {
       case "CHECKING":
         backgroundColor = const Color(0xFF007EFF);
         imageAsset = 'assets/checking.png';
-        statusText = "상태 변동 가능성";
+        statusText = "상태 체크중";
         statusLabel = "CHECKING";
         break;
       default:

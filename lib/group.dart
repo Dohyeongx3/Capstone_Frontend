@@ -139,7 +139,7 @@ class _GroupState extends State<Group> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 왼쪽: 상태 + 이름 + 이메일
+                      // 왼쪽: 상태 + 이름 + 전화번호
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +170,7 @@ class _GroupState extends State<Group> {
                             ),
                             const SizedBox(height: 4),
                             const Text(
-                              'abc123@gmail.com',
+                              '010-0000-0000',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,

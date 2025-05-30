@@ -35,7 +35,7 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/login'); // 주소 수정
+    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/login');
 
     try {
       final response = await http.post(
