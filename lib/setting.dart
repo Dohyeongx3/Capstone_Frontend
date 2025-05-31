@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
 import 'terms.dart';
+import 'editprofile.dart';
 
 class Setting extends StatefulWidget {
   const Setting({Key? key}) : super(key: key);
@@ -177,18 +179,26 @@ class _SettingState extends State<Setting> {
                   ],
                 ),
                 const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0073FF),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    '정보 수정',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0073FF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      '정보 수정',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -289,6 +299,116 @@ class _SettingState extends State<Setting> {
             },
           ),
 
+          const SizedBox(height: 16),
+          const Divider(color: Colors.grey, thickness: 0.5),
+
+          // 계정 관리
+          const Text(
+            '계정 관리',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '비밀번호 재설정',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '비밀번호를 변경할 수 있습니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '로그아웃',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '현재 기기에서 로그아웃합니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '회원탈퇴',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '계정을 삭제하고 모든 데이터를 초기화 합니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
           const SizedBox(height: 16),
           const Divider(color: Colors.grey, thickness: 0.5),
 

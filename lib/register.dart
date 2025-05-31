@@ -20,6 +20,7 @@ class _RegisterState extends State<Register> {
   final _yearController = TextEditingController();
   final _monthController = TextEditingController();
   final _dayController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _idController = TextEditingController();
   final _pwController = TextEditingController();
   final _confirmPwController = TextEditingController();
@@ -27,6 +28,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           '회원가입',
@@ -56,96 +58,109 @@ class _RegisterState extends State<Register> {
   }
 
   Widget _buildStepOne() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          '반가워요! 이름과 생년월일을 알려주세요.',
-          style: TextStyle(
-            color: Color(0xFF0073FF),
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        const Text('회원 정보 입력 (1/2)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
-        const SizedBox(height: 40),
-        TextField(
-          controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: '이름',
-            hintText: '이름을 입력해주세요',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 40),
-        const Text('생년월일', style: TextStyle(fontSize: 16)),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              flex: 4,
-              child: TextField(
-                controller: _yearController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: '년',
-                  hintText: 'YYYY',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 3,
-              child: TextField(
-                controller: _monthController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: '월',
-                  hintText: 'MM',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 3,
-              child: TextField(
-                controller: _dayController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: '일',
-                  hintText: 'DD',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const Spacer(),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _currentStep = 1;
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0073FF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(7),
-              ),
-            ),
-            child: const Text(
-              "다음",
-              style: TextStyle(fontSize: 16, color: Colors.white),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 30), // 키보드와 겹치지 않도록 여유
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '반가워요! 이름과 생년월일을 알려주세요.',
+            style: TextStyle(
+              color: Color(0xFF0073FF),
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          const Text('회원 정보 입력 (1/2)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+          const SizedBox(height: 40),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: '이름',
+              hintText: '이름을 입력해주세요',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 40),
+          const Text('생년월일 (8자리)', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: TextField(
+                  controller: _yearController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: '년',
+                    hintText: 'YYYY',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _monthController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: '월',
+                    hintText: 'MM',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _dayController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: '일',
+                    hintText: 'DD',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 40),
+          TextField(
+            controller: _phoneController,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              labelText: '전화번호',
+              hintText: '010-0000-0000',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 40),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _currentStep = 1;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0073FF),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+              child: const Text(
+                "다음",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -247,11 +262,47 @@ class _RegisterState extends State<Register> {
                         _yearController.text.isEmpty ||
                         _monthController.text.isEmpty ||
                         _dayController.text.isEmpty ||
+                        _phoneController.text.isEmpty ||
                         _idController.text.isEmpty ||
                         _pwController.text.isEmpty ||
                         _confirmPwController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('모든 필드를 입력해주세요.')),
+                      );
+                      return;
+                    }
+
+                    // 생년월일 검사
+                    final yearRegex = RegExp(r'^(19|20)\d{2}$');
+                    final monthRegex = RegExp(r'^(0[1-9]|1[0-2])$');
+                    final dayRegex = RegExp(r'^(0[1-9]|[12][0-9]|3[01])$');
+
+                    if (!yearRegex.hasMatch(_yearController.text.trim())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('올바른 연도를 입력해주세요. 예: 1990')),
+                      );
+                      return;
+                    }
+
+                    if (!monthRegex.hasMatch(_monthController.text.trim())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('올바른 월을 입력해주세요. 예: 01 ~ 12')),
+                      );
+                      return;
+                    }
+
+                    if (!dayRegex.hasMatch(_dayController.text.trim())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('올바른 일을 입력해주세요. 예: 01 ~ 31')),
+                      );
+                      return;
+                    }
+
+                    // 전화번호 정규표현식 검사
+                    final phoneRegex = RegExp(r'^010-\d{4}-\d{4}$');
+                    if (!phoneRegex.hasMatch(_phoneController.text.trim())) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678')),
                       );
                       return;
                     }
@@ -284,6 +335,7 @@ class _RegisterState extends State<Register> {
                     // 서버로 전송할 값 준비
                     final name = _nameController.text.trim();
                     final birth = '${_yearController.text.trim()}-${_monthController.text.trim().padLeft(2, '0')}-${_dayController.text.trim().padLeft(2, '0')}';
+                    final phone = _phoneController.text.trim();
                     final userId = _idController.text.trim();
 
                     final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/register');
@@ -297,6 +349,7 @@ class _RegisterState extends State<Register> {
                           'password': password,
                           'name': name,
                           'birth': birth,
+                          'phone': phone,
                         }),
                       );
 

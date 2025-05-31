@@ -127,7 +127,7 @@ class _TyphoonPageState extends State<TyphoonPage> {
           // 필터별 내용 영역 (Expanded 로 화면 채우기)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, MediaQuery.of(context).padding.bottom + 16.0,),
               child: _selectedTabIndex == 0
                   ? _buildDisasterOverview()
                   : _selectedTabIndex == 1
