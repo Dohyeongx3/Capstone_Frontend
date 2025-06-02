@@ -20,13 +20,24 @@ class _InfoState extends State<Info> {
   final List<String> filterTypes = ['기상', '지질', '해양·수재', '기타 특수'];
 
   final List<Map<String, dynamic>> disasterItems = [
-    {'name': '강력 태풍', 'type': 0, },
-    {'name': '도심 홍수', 'type': 0, },
-    {'name': '집중 호우', 'type': 0, },
-    {'name': '돌발 낙뢰', 'type': 0, },
-    {'name': '대량 적설', 'type': 0, },
-    {'name': '이상 폭염', 'type': 0, },
-    {'name': '지진', 'type': 1, },
+    {'name': '강력 태풍', 'type': 0, 'image':'assets/typhoon.png'},
+    {'name': '도심 홍수', 'type': 0, 'image':'assets/flood.png'},
+    {'name': '집중 호우', 'type': 0, 'image':'assets/rain.png'},
+    {'name': '돌발 낙뢰', 'type': 0, 'image':'assets/lightning.png'},
+    {'name': '대량 적설', 'type': 0, 'image':'assets/heavysnow.png'},
+    {'name': '이상 폭염', 'type': 0, 'image':'assets/heatwave.png'},
+    {'name': '지진', 'type': 1, 'image':'assets/typhoon.png'},
+    {'name': '지진해일', 'type': 1, 'image':'assets/typhoon.png'},
+    {'name': '산사태', 'type': 1, 'image':'assets/typhoon.png'},
+    {'name': '해일', 'type': 2, 'image':'assets/typhoon.png'},
+    {'name': '조수(조석)', 'type': 2, 'image':'assets/typhoon.png'},
+    {'name': '침수', 'type': 2, 'image':'assets/typhoon.png'},
+    {'name': '황사', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '적조', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '우주전파재난', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '자연우주물체추락', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '조류대발생(녹조)', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '해빙기 재난예방', 'type': 3, 'image':'assets/typhoon.png'},
   ];
 
   int _selectedSocialFilterIndex = 0;
@@ -34,16 +45,38 @@ class _InfoState extends State<Info> {
   final List<String> socialFilterTypes = ['물리적 재해', '기술적 재해', '환경·감염', '인적 요인'];
 
   final List<Map<String, dynamic>> socialDisasterItems = [
-    {'name': '대형 화재', 'type': 0},
-    {'name': '산업 폭발', 'type': 0},
-    {'name': '건축물붕괴', 'type': 0},
-    {'name': '댐붕괴', 'type': 0},
-    {'name': '대규모 산불', 'type': 0},
-    {'name': '도로터널사고', 'type': 0},
-    {'name': '테러 공격', 'type': 1},
+    {'name': '대형 화재', 'type': 0, 'image':'assets/blaze.png'},
+    {'name': '산업 폭발', 'type': 0, 'image':'assets/explosion.png'},
+    {'name': '건축물붕괴', 'type': 0, 'image':'assets/collapse.png'},
+    {'name': '댐붕괴', 'type': 0, 'image':'assets/dam.png'},
+    {'name': '대규모 산불', 'type': 0, 'image':'assets/wildfire.png'},
+    {'name': '도로터널사고', 'type': 0, 'image':'assets/tunnel.png'},
+    {'name': '전기·가스 사고', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': '정전 및 전력부족', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': '철도, 지하철 사고', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': '항공기사고', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': '정보통신사고', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': 'GPS전파혼신재난', 'type': 1, 'image':'assets/blaze.png'},
+    {'name': '감염병', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '보건의료재난', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '미세먼지', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '대규모수질오염', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '원유수급위기', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '해양오염사고', 'type': 2, 'image':'assets/blaze.png'},
+    {'name': '지역축제장', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '보험자 안전', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '대중운집 인파사고', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '공동주택난', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '공연장 안전', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '경기장 안전', 'type': 3, 'image':'assets/blaze.png'},
   ];
 
-  final List<String> lifeSafetyItems = ['승강기 안전사고', '응급처치', '심폐소생술', '산행안전사고',];
+  final List<Map<String, dynamic>> lifeSafetyItems = [
+    {'name': '승강기 안전사고', 'image': 'assets/elevator.png'},
+    {'name': '응급처치', 'image': 'assets/firstaid.png'},
+    {'name': '심폐소생술', 'image': 'assets/cpr.png'},
+    {'name': '산행안전사고', 'image': 'assets/hiking.png'},
+  ];
 
   void _onItemTapped(int index) {
     int previousIndex = _selectedIndex;
@@ -339,18 +372,20 @@ class _InfoState extends State<Info> {
   }
 
   List<TableRow> _buildDisasterRows() {
-    final filteredItems = disasterItems.where((item) => _selectedFilterIndex == item['type']).toList();
+    final filteredItems = disasterItems
+        .where((item) => _selectedFilterIndex == item['type'])
+        .toList();
 
     while (filteredItems.length < 6) {
-      filteredItems.add({'name': '', 'image': '', 'type': _selectedFilterIndex});
+      filteredItems.add({'image': '', 'name': '', 'type': _selectedFilterIndex});
     }
 
     List<TableRow> rows = [];
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
       rows.add(
         TableRow(
-          children: List.generate(3, (j) {
-            final item = filteredItems[i * 3 + j];
+          children: List.generate(2, (j) {
+            final item = filteredItems[i * 2 + j];
             if (item['name'] == '') {
               return const SizedBox.shrink();
             }
@@ -366,16 +401,27 @@ class _InfoState extends State<Info> {
               },
               child: SizedBox(
                 height: 80,
-                child: Container( // 이 Container는 시각적 터치 확인을 위해 추가 가능
-                  color: Colors.transparent, // 터치 인식되도록 transparent 처리
-                  alignment: Alignment.center,
-                  child: Text(
-                    item['name'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,  // 수평 가운데 정렬
+                    crossAxisAlignment: CrossAxisAlignment.center, // 수직 가운데 정렬
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: item['image'] != ''
+                            ? AssetImage(item['image']) as ImageProvider
+                            : null,
+                        backgroundColor: Colors.grey[300],
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        item['name'],
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -388,22 +434,43 @@ class _InfoState extends State<Info> {
   }
 
   List<TableRow> _buildSocialDisasterRows() {
-    final filteredItems = socialDisasterItems.where((item) => _selectedSocialFilterIndex == item['type']).toList();
+    final filteredItems = socialDisasterItems
+        .where((item) => _selectedSocialFilterIndex == item['type'])
+        .toList();
+
     while (filteredItems.length < 6) {
-      filteredItems.add({'name': '', 'type': _selectedSocialFilterIndex});
+      filteredItems.add({'image': '', 'name': '', 'type': _selectedSocialFilterIndex});
     }
-    return List.generate(2, (i) {
+
+    return List.generate(3, (i) {
       return TableRow(
-        children: List.generate(3, (j) {
-          final item = filteredItems[i * 3 + j];
+        children: List.generate(2, (j) {
+          final item = filteredItems[i * 2 + j];
           if (item['name'] == '') return const SizedBox.shrink();
+
           return SizedBox(
             height: 80,
             child: Center(
-              child: Text(
-                item['name'],
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,   // 수평 가운데 정렬
+                crossAxisAlignment: CrossAxisAlignment.center, // 수직 가운데 정렬
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: item['image'] != ''
+                        ? AssetImage(item['image']) as ImageProvider
+                        : null,
+                    backgroundColor: Colors.grey[300],
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    item['name'],
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -414,21 +481,42 @@ class _InfoState extends State<Info> {
 
   List<TableRow> _buildLifeSafetyRows() {
     List<TableRow> rows = [];
+
+    // 2x2 그리드를 채우기 위해 리스트 길이가 4보다 적을 경우 빈 항목으로 채움
+    while (lifeSafetyItems.length < 4) {
+      lifeSafetyItems.add({'name': '', 'image': ''});
+    }
+
     for (int i = 0; i < 2; i++) {
       rows.add(
         TableRow(
           children: List.generate(2, (j) {
-            final index = i * 2 + j;
+            final item = lifeSafetyItems[i * 2 + j];
+
+            if (item['name'] == '') {
+              return const SizedBox.shrink(); // 빈 칸 처리
+            }
+
             return SizedBox(
               height: 80,
               child: Center(
-                child: Text(
-                  lifeSafetyItems[index],
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage: AssetImage(item['image']),
+                      backgroundColor: Colors.grey[200],
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      item['name'],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -436,6 +524,7 @@ class _InfoState extends State<Info> {
         ),
       );
     }
+
     return rows;
   }
 

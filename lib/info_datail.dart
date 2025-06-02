@@ -55,7 +55,7 @@ class _TyphoonPageState extends State<TyphoonPage> {
                 const SizedBox(height: 16),
                 Center(
                   child: Image.asset(
-                    'assets/typhoon.png',
+                    'assets/typhoon_detail.png',
                     height: 150,
                     fit: BoxFit.contain,
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
+
 
 import 'register.dart';
 import 'onboard.dart';
@@ -35,23 +37,32 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/login');
+    final url = Uri.parse('https://capstoneserver-etkm.onrender.com/api/auth/login'); // 주소 수정
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'userId': id, 'password': pw}),
+        body: jsonEncode({'email': id, 'password': pw}),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success']) {
-          // 로그인 성공
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Home()),
-          );
+          final customToken = data['customToken'];
+
+          try {
+            // Firebase에 로그인 시도
+            await FirebaseAuth.instance.signInWithCustomToken(customToken);
+
+            // 로그인 성공 시 홈 화면으로 이동
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          } catch (firebaseError) {
+            _showErrorDialog('Firebase 로그인 실패: $firebaseError');
+          }
         } else {
           _showErrorDialog(data['message'] ?? '로그인 실패');
         }

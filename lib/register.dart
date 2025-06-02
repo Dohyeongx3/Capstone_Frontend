@@ -334,7 +334,9 @@ class _RegisterState extends State<Register> {
 
                     // 서버로 전송할 값 준비
                     final name = _nameController.text.trim();
-                    final birth = '${_yearController.text.trim()}-${_monthController.text.trim().padLeft(2, '0')}-${_dayController.text.trim().padLeft(2, '0')}';
+                    final year = _yearController.text.trim();
+                    final month = _monthController.text.trim();
+                    final day = _dayController.text.trim();
                     final phone = _phoneController.text.trim();
                     final userId = _idController.text.trim();
 
@@ -348,7 +350,9 @@ class _RegisterState extends State<Register> {
                           'userId': userId,
                           'password': password,
                           'name': name,
-                          'birth': birth,
+                          'year': year,
+                          'month': month,
+                          'day': day,
                           'phone': phone,
                         }),
                       );
@@ -410,7 +414,7 @@ class _RegisterState extends State<Register> {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0073FF),
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
