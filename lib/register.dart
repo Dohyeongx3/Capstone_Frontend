@@ -302,7 +302,7 @@ class _RegisterState extends State<Register> {
                         url,
                         headers: {'Content-Type': 'application/json'},
                         body: jsonEncode({
-                          'userId': userId,
+                          'email': userId,
                           'password': password,
                           'name': name,
                           'year': year,
