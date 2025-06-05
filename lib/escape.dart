@@ -79,14 +79,13 @@ class _EscapeState extends State<Escape> {
             Navigator.pop(context, _currentSelectedIndex);
           },
         ),
-        title: const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "실내 대피 경로 안내",
-            style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Text(
+          '실내 대피 경로 안내',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 18
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
       ),
       body: Stack(
         children: [

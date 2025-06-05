@@ -4,6 +4,7 @@ import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
+import 'notification.dart';
 import 'setting.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -118,9 +119,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       ),
       centerTitle: true,
-      actions: const [
-        Icon(Icons.notifications_outlined, color: Colors.black),
-        SizedBox(width: 16),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotificationPage(),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 16),
       ],
     );
   }

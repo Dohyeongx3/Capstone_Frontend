@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'notification.dart';
+
 class GroupInvite extends StatelessWidget {
   const GroupInvite({super.key});
 
@@ -19,11 +21,19 @@ class GroupInvite extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        actions: const [
-          Icon(Icons.search, color: Colors.black),
-          SizedBox(width: 16),
-          Icon(Icons.notifications_outlined, color: Colors.black),
-          SizedBox(width: 16),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 16),
         ],
       ),
       body: _buildBody(context),

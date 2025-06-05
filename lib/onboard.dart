@@ -60,40 +60,6 @@ class Onboard extends StatelessWidget {
                 ),
               ),
               const Spacer(flex: 4),
-              // 카카오 로그인 버튼
-              ElevatedButton(
-                onPressed: () {
-                  // 카카오 로그인 동작 구현
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(0),
-                ),
-                child: Image.asset('assets/kakao.png', width: 360, height: 50),
-              ),
-              const SizedBox(height: 20),
-              // 또는 구분선
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Divider(color: Colors.grey[400]),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        '또는',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(color: Colors.grey[400]),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 20),
               // 회원가입 버튼
               ElevatedButton(

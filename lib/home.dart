@@ -9,6 +9,7 @@ import 'info.dart';
 import 'login.dart';
 import 'setting.dart';
 import 'shelter.dart';
+import 'notification.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -164,9 +165,18 @@ class _HomeState extends State<Home> {
               const SizedBox(width: 10),
               const Text("홈 메인", style: TextStyle(fontSize: 18)),
               const Spacer(),
-              const Icon(Icons.search),
               const SizedBox(width: 10),
-              const Icon(Icons.notifications_outlined),
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationPage(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

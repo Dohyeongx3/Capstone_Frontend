@@ -6,6 +6,7 @@ import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
+import 'notification.dart';
 import 'terms.dart';
 import 'editprofile.dart';
 
@@ -118,9 +119,17 @@ class _SettingState extends State<Setting> {
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
           const Spacer(),
-          const Icon(Icons.search, color: Colors.black),
-          const SizedBox(width: 10),
-          const Icon(Icons.notifications_outlined, color: Colors.black),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

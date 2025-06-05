@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'escape.dart';
 import 'home.dart';
 import 'info.dart';
+import 'notification.dart';
 import 'setting.dart';
 import 'group_invite.dart';
 
@@ -105,9 +106,17 @@ class _GroupState extends State<Group> {
             ),
           ),
           const Spacer(),
-          const Icon(Icons.search, color: Colors.black),
-          const SizedBox(width: 10),
-          const Icon(Icons.notifications_outlined),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

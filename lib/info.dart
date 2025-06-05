@@ -3,6 +3,7 @@ import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info_datail.dart';
+import 'notification.dart';
 import 'setting.dart';
 
 class Info extends StatefulWidget {
@@ -26,18 +27,18 @@ class _InfoState extends State<Info> {
     {'name': '돌발 낙뢰', 'type': 0, 'image':'assets/lightning.png'},
     {'name': '대량 적설', 'type': 0, 'image':'assets/heavysnow.png'},
     {'name': '이상 폭염', 'type': 0, 'image':'assets/heatwave.png'},
-    {'name': '지진', 'type': 1, 'image':'assets/typhoon.png'},
-    {'name': '지진해일', 'type': 1, 'image':'assets/typhoon.png'},
-    {'name': '산사태', 'type': 1, 'image':'assets/typhoon.png'},
-    {'name': '해일', 'type': 2, 'image':'assets/typhoon.png'},
-    {'name': '조수(조석)', 'type': 2, 'image':'assets/typhoon.png'},
-    {'name': '침수', 'type': 2, 'image':'assets/typhoon.png'},
-    {'name': '황사', 'type': 3, 'image':'assets/typhoon.png'},
-    {'name': '적조', 'type': 3, 'image':'assets/typhoon.png'},
-    {'name': '우주전파재난', 'type': 3, 'image':'assets/typhoon.png'},
-    {'name': '자연우주물체추락', 'type': 3, 'image':'assets/typhoon.png'},
-    {'name': '조류대발생(녹조)', 'type': 3, 'image':'assets/typhoon.png'},
-    {'name': '해빙기 재난예방', 'type': 3, 'image':'assets/typhoon.png'},
+    {'name': '지진', 'type': 1, 'image':'assets/earthquake.png'},
+    {'name': '지진해일', 'type': 1, 'image':'assets/earthquaketsunami.png'},
+    {'name': '산사태', 'type': 1, 'image':'assets/landslide.png'},
+    {'name': '해일', 'type': 2, 'image':'assets/tsunami.png'},
+    {'name': '조수(조석)', 'type': 2, 'image':'assets/tide.png'},
+    {'name': '침수', 'type': 2, 'image':'assets/flooding.png'},
+    {'name': '황사', 'type': 3, 'image':'assets/yellowdust.png'},
+    {'name': '적조', 'type': 3, 'image':'assets/redtide.png'},
+    {'name': '우주전파재난', 'type': 3, 'image':'assets/space.png'},
+    {'name': '자연우주물체추락', 'type': 3, 'image':'assets/fall.png'},
+    {'name': '조류대발생(녹조)', 'type': 3, 'image':'assets/greentide.png'},
+    {'name': '해빙기 재난예방', 'type': 3, 'image':'assets/thaw.png'},
   ];
 
   int _selectedSocialFilterIndex = 0;
@@ -51,24 +52,24 @@ class _InfoState extends State<Info> {
     {'name': '댐붕괴', 'type': 0, 'image':'assets/dam.png'},
     {'name': '대규모 산불', 'type': 0, 'image':'assets/wildfire.png'},
     {'name': '도로터널사고', 'type': 0, 'image':'assets/tunnel.png'},
-    {'name': '전기·가스 사고', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': '정전 및 전력부족', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': '철도, 지하철 사고', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': '항공기사고', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': '정보통신사고', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': 'GPS전파혼신재난', 'type': 1, 'image':'assets/blaze.png'},
-    {'name': '감염병', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '보건의료재난', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '미세먼지', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '대규모수질오염', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '원유수급위기', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '해양오염사고', 'type': 2, 'image':'assets/blaze.png'},
-    {'name': '지역축제장', 'type': 3, 'image':'assets/blaze.png'},
-    {'name': '보험자 안전', 'type': 3, 'image':'assets/blaze.png'},
-    {'name': '대중운집 인파사고', 'type': 3, 'image':'assets/blaze.png'},
-    {'name': '공동주택난', 'type': 3, 'image':'assets/blaze.png'},
-    {'name': '공연장 안전', 'type': 3, 'image':'assets/blaze.png'},
-    {'name': '경기장 안전', 'type': 3, 'image':'assets/blaze.png'},
+    {'name': '전기·가스 사고', 'type': 1, 'image':'assets/electricitygas.png'},
+    {'name': '정전 및 전력부족', 'type': 1, 'image':'assets/blackout.png'},
+    {'name': '철도, 지하철 사고', 'type': 1, 'image':'assets/railway.png'},
+    {'name': '항공기사고', 'type': 1, 'image':'assets/plane.png'},
+    {'name': '정보통신사고', 'type': 1, 'image':'assets/information.png'},
+    {'name': 'GPS전파혼신재난', 'type': 1, 'image':'assets/GPS.png'},
+    {'name': '감염병', 'type': 2, 'image':'assets/infection.png'},
+    {'name': '보건의료재난', 'type': 2, 'image':'assets/medical.png'},
+    {'name': '미세먼지', 'type': 2, 'image':'assets/finedust.png'},
+    {'name': '대규모수질오염', 'type': 2, 'image':'assets/waterpollution.png'},
+    {'name': '원유수급위기', 'type': 2, 'image':'assets/crude.png'},
+    {'name': '해양오염사고', 'type': 2, 'image':'assets/marinepollution.png'},
+    {'name': '지역축제장', 'type': 3, 'image':'assets/festival.png'},
+    {'name': '보험자 안전', 'type': 3, 'image':'assets/insurance.png'},
+    {'name': '대중운집 인파사고', 'type': 3, 'image':'assets/crowd.png'},
+    {'name': '공동주택난', 'type': 3, 'image':'assets/apartment.png'},
+    {'name': '공연장 안전', 'type': 3, 'image':'assets/theater.png'},
+    {'name': '경기장 안전', 'type': 3, 'image':'assets/stadium.png'},
   ];
 
   final List<Map<String, dynamic>> lifeSafetyItems = [
@@ -135,9 +136,17 @@ class _InfoState extends State<Info> {
           const SizedBox(width: 10),
           const Text("재난 정보", style: TextStyle(fontSize: 18, color: Colors.black)),
           const Spacer(),
-          const Icon(Icons.search, color: Colors.black),
-          const SizedBox(width: 10),
-          const Icon(Icons.notifications_outlined, color: Colors.black),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -396,6 +405,12 @@ class _InfoState extends State<Info> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const TyphoonPage()),
+                  );
+                }
+                if (item['name'] == '도심 홍수') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FloodPage()),
                   );
                 }
               },
