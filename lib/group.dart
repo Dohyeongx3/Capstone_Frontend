@@ -5,7 +5,7 @@ import 'home.dart';
 import 'info.dart';
 import 'notification.dart';
 import 'setting.dart';
-import 'group_invite.dart';
+import 'group_template.dart';
 
 class Group extends StatefulWidget {
   const Group({Key? key}) : super(key: key);
@@ -54,7 +54,20 @@ class _GroupState extends State<Group> {
     }
   }
 
-  // 위험 상태 멤버 리스트 예시
+  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  final List<Map<String, dynamic>> UserData = [
+    {
+      'name': '사용자 이름',
+      'year': 2000,
+      'month': 11,
+      'day': 11,
+      'phone': '010-1234-5678',
+      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
+      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
+    }
+  ];
+
+  //TODO: DB에서 그룹 내 속한 모든 상태가 DANGER인사람 모아서 호출
   final List<Map<String, String?>> dangerMembers = [
     {
       'name': '홍길동',
@@ -70,9 +83,10 @@ class _GroupState extends State<Group> {
     },
   ];
 
+  //TODO: DB에서 사용자가 속한 모든 그룹 호출
   final List<Map<String, dynamic>> groups = [
-    {'name': '그룹1', 'members': 4},
-    {'name': '그룹2', 'members': 6},
+    {'name': '그룹1', 'members': 4 ,'backgroundimage': 'assets/default_profile.png'},
+    {'name': '그룹2', 'members': 6 ,'backgroundimage': 'assets/default_profile.png'},
   ];
 
   @override
@@ -123,6 +137,28 @@ class _GroupState extends State<Group> {
   }
 
   Widget _buildBody() {
+    final user = UserData.first;
+
+    Color statusColor;
+    String statusText;
+
+    switch (user['status']) {
+      case 'SAFE':
+        statusColor = const Color(0xFF00BB6D);
+        statusText = '안전';
+        break;
+      case 'DANGER':
+        statusColor = const Color(0xFFFF6200);
+        statusText = '위험';
+        break;
+      case 'CHECKING':
+        statusColor = const Color(0xFF007EFF);
+        statusText = '확인중';
+        break;
+      default:
+        statusColor = Colors.grey;
+        statusText = '알 수 없음';
+    }
     return SingleChildScrollView(
       child:Padding(
         padding: const EdgeInsets.all(16),
@@ -159,28 +195,28 @@ class _GroupState extends State<Group> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
-                                '안전', // 위험일 경우 '위험'
+                              child: Text(
+                                statusText,
                                 style: TextStyle(
-                                  color: Color(0xFF00BB6D), // 위험: Color(0xFFFF6200)
+                                  color: statusColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              '사용자 이름',
-                              style: TextStyle(
+                            Text(
+                              user['name'],
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              '010-0000-0000',
-                              style: TextStyle(
+                            Text(
+                              user['phone'],
+                              style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,
                               ),
@@ -189,9 +225,9 @@ class _GroupState extends State<Group> {
                         ),
                       ),
                       // 오른쪽: 프로필 이미지
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage('assets/default_profile.png'),
+                        backgroundImage: AssetImage(user['profileImage'] ?? 'assets/default_profile.png'),
                       ),
                     ],
                   ),
@@ -307,7 +343,7 @@ class _GroupState extends State<Group> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const GroupInvite()),
+                        MaterialPageRoute(builder: (context) => const GroupPageTemplate()),
                       );
                     },
                     child: Container(

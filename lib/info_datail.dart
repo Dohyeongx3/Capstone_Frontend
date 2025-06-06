@@ -234,16 +234,194 @@ class _FloodPageState extends State<FloodPage> {
             SectionBlock(
               title: '발생 원인',
               items: [
-                '발생 시기: 6월 ~ 10월',
-                '폭우, 하천 범람, 제방 붕괴 등',
-                '영향 지역: 저지대, 하천 인근, 지하차도 등',
+                '짧은 시간 내 많은 강수',
+                '배수시설 용량 초과',
+                '포장도로 면적 증가 → 지면 흡수력 부족',
               ],
             ),
             SectionBlock(
-              title: '홍수 분류 기준',
+              title: '피해 지역',
               items: [
-                '하천 수위 상승, 범람 위험',
-                '도심 침수, 도로·지하차도 침수',
+                '저지대, 지하차도, 반지하 주택, 공사장 주변',
+              ],
+            ),
+            SectionBlock(
+              title: '영향',
+              items: [
+                '차량 고립, 감전 사고, 주택 침수, 지하철역 침수 등',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '지하차도 침수',
+              items: [
+                '짧은 시간 내 수위 상승, 차량 고립 및 익사 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '주택·상가 침수',
+              items: [
+                '실내 정전, 감전, 가전제품 파손 가능',
+              ],
+            ),
+            SectionBlock(
+              title: '정전 및 감전 사고',
+              items: [
+                '침수된 전기시설 접근 시 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '도로 붕괴 / 침하',
+              items: [
+                '보행 중 하수구 및 맨홀 추락 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '하천 범람',
+              items: [
+                '범람 시 급속한 수위 상승, 대피 지연',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '홍수 발생 전',
+              items: [
+                'TV·라디오 통해 기상 정보 확인',
+                '집 주변 배수구, 하수구 정리',
+                '차량은 고지대로 이동',
+                '가전제품, 귀중품은 높은 곳에 보관',
+              ],
+            ),
+            SectionBlock(
+              title: '홍수 진행 중',
+              items: [
+                '침수 도로·지하차도 진입 금지',
+                '맨홀, 전봇대, 전기시설 근처 접근 금지',
+                '위험 발생 시 119·112 신고',
+                '어린이는 절대 밖에 나가지 않도록 지도',
+              ],
+            ),
+            SectionBlock(
+              title: '홍수 지나간 후',
+              items: [
+                '실내외 청소 시 전기 차단 확인',
+                '오염된 음식물은 반드시 폐기',
+                '수돗물 오염 의심 시 끓여 마시기',
+                '손 씻기, 감염병 예방',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/flood_card.png',
+          linkTitle: '국민재난안전포털 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent13.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class RainfallPage extends StatefulWidget {
+  const RainfallPage({super.key});
+
+  @override
+  State<RainfallPage> createState() => _RainfallPageState();
+}
+
+class _RainfallPageState extends State<RainfallPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '홍수 행동요령. '
+              '홍수 발생 전. TV와 라디오를 통해 기상 정보를 확인하세요. 집 주변의 배수구와 하수구를 정리하고, 차량은 고지대로 옮기세요. '
+              '가전제품과 귀중품은 높은 곳에 보관하세요. '
+              '홍수 진행 중. 침수된 도로나 지하차도에는 진입하지 마세요. 맨홀이나 전봇대, 전기시설 근처에는 접근하지 마세요. '
+              '위험이 발생하면 119나 112에 신고하고, 어린이는 절대 밖에 나가지 않도록 지도하세요. '
+              '홍수 지나간 후. 실내외 청소 전에는 반드시 전기를 차단했는지 확인하세요. 오염된 음식물은 반드시 폐기하고, 수돗물이 오염되었을 경우 반드시 끓여 마시세요. '
+              '손을 자주 씻고 감염병을 예방하세요.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '집중 호우 (Heavy Rainfall)',
+      mainImageAsset: 'assets/rain_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 가능 시기', content: '6월~9월'),
+        InfoRowData(title: '경보 기준', content: '시간당 30mm 이상 강우'),
+        InfoRowData(title: '피해 위험', content: '침수, 산사태, 도로 유실, 인명 사고'),
+        InfoRowData(title: '관련 기관', content: '기상청, 행정안전부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '집중호우는 짧은 시간 동안 매우 많은 비가 집중적으로 내리는 현상으로 하수도, 배수 시설이 감당하지 못해 침수, 산사태, 교통 두절 등 피해로 이어집니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '발생 원인',
+              items: [
+                '짧은 시간 내 많은 강수',
+                '배수시설 용량 초과',
+                '포장도로 면적 증가 → 지면 흡수력 부족',
+              ],
+            ),
+            SectionBlock(
+              title: '피해 지역',
+              items: [
+                '저지대, 지하차도, 반지하 주택, 공사장 주변',
+              ],
+            ),
+            SectionBlock(
+              title: '영향',
+              items: [
+                '차량 고립, 감전 사고, 주택 침수, 지하철역 침수 등',
               ],
             ),
           ],

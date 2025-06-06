@@ -178,7 +178,7 @@ class _RegisterState extends State<Register> {
             border: const OutlineInputBorder(),
             suffixIcon: TextButton(
               onPressed: () {
-                // 중복 확인 로직
+                //TODO:DB에서 이미 존재하는 아이디인지 비교
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,

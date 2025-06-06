@@ -101,7 +101,7 @@ class _IDPWfindState extends State<IDPWfind> {
             border: const OutlineInputBorder(),
             suffixIcon: TextButton(
               onPressed: () {
-                // 인증번호 전송 로직
+                //TODO:파이어 베이스에서 DB에 저장된 전화번호 베이스로 인증번호 인증
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,
@@ -165,7 +165,7 @@ class _IDPWfindState extends State<IDPWfind> {
             border: const OutlineInputBorder(),
             suffixIcon: TextButton(
               onPressed: () {
-                // 인증번호 전송 로직
+                //TODO:파이어 베이스에서 DB에 저장된 전화번호 베이스로 인증번호 인증
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,

@@ -24,6 +24,19 @@ class _SettingState extends State<Setting> {
   bool isNotificationEnabled = false;
   bool isTTSEnabled = false;
 
+  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  final List<Map<String, dynamic>> UserData = [
+    {
+      'name': '사용자 이름',
+      'year': 2000,
+      'month': 11,
+      'day': 11,
+      'phone': '010-1234-5678',
+      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
+      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -136,6 +149,12 @@ class _SettingState extends State<Setting> {
   }
 
   Widget _buildBody() {
+    final user = UserData.first;
+
+    final String name = user['name'];
+    final String phone = user['phone'];
+    final String profileImage = user['profileImage'] ?? 'assets/default_profile.png';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -161,26 +180,26 @@ class _SettingState extends State<Setting> {
             ),
             child: Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage('assets/default_profile.png'),
+                  backgroundImage: AssetImage(profileImage),
                 ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      '사용자 이름',
-                      style: TextStyle(
+                      name,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      '010-0000-0000',
-                      style: TextStyle(
+                      phone,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
                       ),
@@ -322,7 +341,9 @@ class _SettingState extends State<Setting> {
           ),
           const SizedBox(height: 12),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              // TODO:비밀번호 변경 로직
+            },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -355,7 +376,9 @@ class _SettingState extends State<Setting> {
           ),
           const SizedBox(height: 12),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              // TODO:로그아웃 로직
+            },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -387,7 +410,9 @@ class _SettingState extends State<Setting> {
           ),
           const SizedBox(height: 12),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              // TODO:회원 탈퇴 로직
+            },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

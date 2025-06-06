@@ -17,14 +17,18 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   int _selectedIndex = 4; // 설정 화면에서 진입했기 때문에 기본 인덱스는 4
 
-  // 임의 유저 정보 (DB에서 받을 데이터 대체)
-  final Map<String, String> dummyUserData = {
-    'name': '사용자 이름',
-    'year': '2000',
-    'month': '01',
-    'day': '01',
-    'phone': '010-1234-5678',
-  };
+  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  final List<Map<String, dynamic>> UserData = [
+    {
+      'name': '사용자 이름',
+      'year': 2000,
+      'month': 11,
+      'day': 11,
+      'phone': '010-1234-5678',
+      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
+      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
+    }
+  ];
 
   // TextEditingController 선언
   late TextEditingController _nameController;
@@ -36,12 +40,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    // 컨트롤러 초기화 및 임의 데이터 할당
-    _nameController = TextEditingController(text: dummyUserData['name']);
-    _yearController = TextEditingController(text: dummyUserData['year']);
-    _monthController = TextEditingController(text: dummyUserData['month']);
-    _dayController = TextEditingController(text: dummyUserData['day']);
-    _phoneController = TextEditingController(text: dummyUserData['phone']);
+
+    final user = UserData.first;
+
+    _nameController = TextEditingController(text: user['name']);
+    _yearController = TextEditingController(text: user['year'].toString());
+    _monthController = TextEditingController(text: user['month'].toString());
+    _dayController = TextEditingController(text: user['day'].toString());
+    _phoneController = TextEditingController(text: user['phone']);
   }
 
   @override
@@ -276,7 +282,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 return;
                 }
 
-                // 수정하기 버튼 눌렀을 때 처리할 코드
+                // TODO:수정하기 버튼 누르면 위 수정사항 리스트와 DB에 반영
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0073FF),

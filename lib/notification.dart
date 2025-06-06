@@ -8,8 +8,9 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationState extends State<NotificationPage> {
-  // 임의의 알림 리스트 (DB 연동 전 임시 데이터)
-  final List<String> notifications = []; // 비워진 상태로 시작
+
+  //TODO:DB에서 재난 문자 API에서 받아온 데이터 연결
+  final List<String> notifications = [];
 
   @override
   Widget build(BuildContext context) {

@@ -413,6 +413,12 @@ class _InfoState extends State<Info> {
                     MaterialPageRoute(builder: (context) => const FloodPage()),
                   );
                 }
+                if (item['name'] == '집중 호우') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RainfallPage()),
+                  );
+                }
               },
               child: SizedBox(
                 height: 80,

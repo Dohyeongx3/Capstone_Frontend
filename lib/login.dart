@@ -92,6 +92,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text(
           '로그인',
@@ -116,11 +117,12 @@ class _LoginState extends State<Login> {
           },
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 20),
             const Text('개인회원', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
             const SizedBox(height: 20),
             TextField(
