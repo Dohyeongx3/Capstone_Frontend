@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
+import 'notification.dart';
+import 'terms.dart';
+import 'editprofile.dart';
 
 class Setting extends StatefulWidget {
   const Setting({Key? key}) : super(key: key);
@@ -14,6 +19,44 @@ class Setting extends StatefulWidget {
 
 class _SettingState extends State<Setting> {
   int _selectedIndex = 4; // 설정 화면이므로 인덱스 4로 설정
+
+  bool isLocationEnabled = true;
+  bool isNotificationEnabled = false;
+  bool isTTSEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLocationPermission(); // 시작 시 권한 체크
+  }
+
+  Future<void> _checkLocationPermission() async {
+    final status = await Permission.location.status;
+    setState(() {
+      isLocationEnabled = status.isGranted;
+    });
+  }
+
+  Future<void> _handleLocationToggle(bool value) async {
+    if (value) {
+      final status = await Permission.location.request();
+      if (status.isGranted) {
+        setState(() {
+          isLocationEnabled = true;
+        });
+      } else {
+        setState(() {
+          isLocationEnabled = false;
+        });
+      }
+    } else {
+      // 권한을 수동으로 revoke할 수는 없으므로 사용자에게 안내
+      setState(() {
+        isLocationEnabled = false;
+      });
+      openAppSettings(); // 설정으로 유도
+    }
+  }
 
   void _onItemTapped(int index) {
     int previousIndex = _selectedIndex;  // 화면을 전환하기 전에 현재 selectedIndex를 저장
@@ -69,170 +112,443 @@ class _SettingState extends State<Setting> {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
+          Image.asset('assets/logo.png', width: 24, height: 24),
+          const SizedBox(width: 10),
           const Text(
-            '설정',
-            style: TextStyle(
-              color: Color(0xFF4B4B4B),
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+            "설정",
+            style: TextStyle(fontSize: 18, color: Colors.black),
           ),
           const Spacer(),
-          const Icon(Icons.search, color: Colors.black),
-          const SizedBox(width: 10),
-          const Icon(Icons.notifications_outlined),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
-  // Body 구성
   Widget _buildBody() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 사용자 프로필
-          Row(
-            children: [
-              // 프로필 이미지
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage('assets/default_profile.png'),
-              ),
-              const SizedBox(width: 16),
-              // 사용자 이름과 기본 정보 보기
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    '사용자 이름', // 실제 사용자 이름으로 바꾸세요
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '기본 정보 보기',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              // 오른쪽 '>' 아이콘
-              Icon(Icons.arrow_forward_ios, size: 20, color: Colors.grey),
-            ],
+          // 기본 정보
+          const Text(
+            '기본 정보',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // 대피 이력 섹션
+          // 사용자 정보 카드
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                // 대피 이력 텍스트
+                const CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage('assets/default_profile.png'),
+                ),
+                const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      '대피 이력',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      '사용자 이름',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
-                      '완료된 대피 경로와 세부 이력을 확인하세요.',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      '010-0000-0000',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
                   ],
                 ),
                 const Spacer(),
-                // "보기" 텍스트 버튼
-                TextButton(
-                  onPressed: () {
-                    // 대피 이력 보기 동작 추가 가능
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    );
                   },
-                  child: const Text(
-                    '보기',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0073FF),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BB6D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: const Text(
+                      '정보 수정',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                 ),
               ],
             ),
           ),
+
           const SizedBox(height: 16),
-          const Divider(color: Colors.grey, thickness: 1),
+          const Divider(color: Colors.grey, thickness: 0.5),
+          const SizedBox(height: 16),
+
+          // 데이터 관리
+          const Text(
+            '데이터 관리',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '나의 대피 이력',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '완료된 대피 경로 및 세부 이력 확인',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Divider(color: Colors.grey, thickness: 0.5),
+          const SizedBox(height: 16),
 
           // 서비스 섹션
-          const SizedBox(height: 16),
           const Text(
             '서비스',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 12),
-          // 서비스 항목들
-          _buildServiceOption(
-            icon: Icons.arrow_forward,
-            text: '현재 위치 추적 활성화',
-            onOffButton: true,
+
+          // 현재 위치 추적
+          _buildToggleSetting(
+            title: '현재 위치 추적 활성화',
+            subtitle: '재난 발생 시 내 위치 기준으로 정보를 제공합니다.',
+            value: isLocationEnabled,
+              onChanged: _handleLocationToggle,
+          ),
+
+          const SizedBox(height: 12),
+
+          // 재난 알림
+          _buildToggleSetting(
+            title: '재난 알림 활성화',
+            subtitle: '위험 지역 접근 시 알림을 전송합니다.',
+            value: isNotificationEnabled,
+            onChanged: (value) {
+              isNotificationEnabled = value;
+            },
+          ),
+
+          const SizedBox(height: 12),
+
+          // TTS 안내
+          _buildToggleSetting(
+            title: 'TTS 안내 활성화',
+            subtitle: '재난 상황에서 음성으로 안내를 제공합니다.',
+            value: isTTSEnabled,
+            onChanged: (value) {
+              isTTSEnabled = value;
+            },
+          ),
+
+          const SizedBox(height: 16),
+          const Divider(color: Colors.grey, thickness: 0.5),
+
+          // 계정 관리
+          const Text(
+            '계정 관리',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 12),
-          _buildServiceOption(
-            icon: Icons.notifications,
-            text: '재난 알림 활성화',
-            onOffButton: true,
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '비밀번호 재설정',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '비밀번호를 변경할 수 있습니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
-          _buildServiceOption(
-            icon: Icons.volume_up,
-            text: 'TTS 안내 활성화',
-            onOffButton: true,
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '로그아웃',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '현재 기기에서 로그아웃합니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {},
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        '회원탈퇴',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '계정을 삭제하고 모든 데이터를 초기화 합니다.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Divider(color: Colors.grey, thickness: 0.5),
+
+          const Text(
+            '정보',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 앱 버전
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text(
+                '앱 버전',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                'v 3.21',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // 서비스 이용약관
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TermsOfServicePage()),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  '서비스 이용약관',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 개인정보 처리방침
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PrivacyPolicyPage()),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  '개인정보 처리방침',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // 서비스 항목을 만드는 위젯
-  Widget _buildServiceOption({
-    required IconData icon,
-    required String text,
-    required bool onOffButton,
+// 커스텀 스위치 항목
+  Widget _buildToggleSetting({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required Function(bool) onChanged,
   }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 아이콘
-        Icon(icon, size: 30, color: Colors.black),
-        const SizedBox(width: 16),
-        // 텍스트
-        Text(text, style: const TextStyle(fontSize: 16)),
-        const Spacer(),
-        // On/Off 버튼
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
         Switch(
-          value: true, // 실제로는 상태에 따라 변경되게 할 수 있음
-          onChanged: (bool value) {},
-          activeColor: const Color(0xFF00BB6D), // 활성화 상태 트랙 색상
-          inactiveThumbColor: Colors.white, // 비활성화 상태 동그라미 색상 (흰색)
-          inactiveTrackColor: Colors.grey, // 비활성화 상태 트랙 색상
-          activeTrackColor: const Color(0xFF00BB6D), // 활성화 상태 트랙 색상
-          thumbColor: MaterialStateProperty.all(Colors.white), // 동그라미 색상 흰색
+          value: value,
+          onChanged: onChanged,
+          activeColor: Colors.white,
+          activeTrackColor: const Color(0xFF0073FF),
+          inactiveThumbColor: Colors.white,
+          inactiveTrackColor: Colors.grey.shade300,
         ),
       ],
     );
   }
+
 
   // BottomNavigationBar 설정
   Widget _buildBottomNavigationBar() {

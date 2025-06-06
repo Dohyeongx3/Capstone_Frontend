@@ -1,0 +1,2 @@
+D:/safetyandmanagement/android/app/.cxx/RelWithDebInfo/4f3mo6l2/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/safetyandmanagement/android/app/.cxx/RelWithDebInfo/4f3mo6l2/armeabi-v7a/CMakeFiles/rebuild_cache.dir

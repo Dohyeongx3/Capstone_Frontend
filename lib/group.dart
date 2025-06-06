@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'escape.dart';
 import 'home.dart';
 import 'info.dart';
+import 'notification.dart';
 import 'setting.dart';
 import 'group_invite.dart';
 
@@ -105,9 +106,17 @@ class _GroupState extends State<Group> {
             ),
           ),
           const Spacer(),
-          const Icon(Icons.search, color: Colors.black),
-          const SizedBox(width: 10),
-          const Icon(Icons.notifications_outlined),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -139,7 +148,7 @@ class _GroupState extends State<Group> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 왼쪽: 상태 + 이름 + 이메일
+                      // 왼쪽: 상태 + 이름 + 전화번호
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +179,7 @@ class _GroupState extends State<Group> {
                             ),
                             const SizedBox(height: 4),
                             const Text(
-                              'abc123@gmail.com',
+                              '010-0000-0000',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,
@@ -288,91 +297,93 @@ class _GroupState extends State<Group> {
               ),
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                // 추가 버튼 카드
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const GroupInvite()),
-                    );
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF676767),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              '추가',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
+            Center(
+              child:Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  // 추가 버튼 카드
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const GroupInvite()),
+                      );
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF676767),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                '추가',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const Center(
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.grey,
-                            size: 36,
+                          const Center(
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.grey,
+                              size: 36,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                // 그룹 카드들
-                ...groups.map((group) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F0FF),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blueAccent),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          group['name'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                  // 그룹 카드들
+                  ...groups.map((group) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F0FF),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blueAccent),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            group['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${group['members']}명 참여 중',
-                          style: const TextStyle(fontSize: 12, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ],
-            ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${group['members']}명 참여 중',
+                            style: const TextStyle(fontSize: 12, color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            )
           ],
         ),
       ),

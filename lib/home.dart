@@ -9,6 +9,7 @@ import 'info.dart';
 import 'login.dart';
 import 'setting.dart';
 import 'shelter.dart';
+import 'notification.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -144,7 +145,7 @@ class _HomeState extends State<Home> {
       case "CHECKING":
         backgroundColor = const Color(0xFF007EFF);
         imageAsset = 'assets/checking.png';
-        statusText = "상태 변동 가능성";
+        statusText = "상태 체크중";
         statusLabel = "CHECKING";
         break;
       default:
@@ -164,9 +165,18 @@ class _HomeState extends State<Home> {
               const SizedBox(width: 10),
               const Text("홈 메인", style: TextStyle(fontSize: 18)),
               const Spacer(),
-              const Icon(Icons.search),
               const SizedBox(width: 10),
-              const Icon(Icons.notifications_outlined),
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationPage(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -211,8 +221,8 @@ class _HomeState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(statusText, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                        const Text('-', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                        const Text('-', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        const Text('위치 파악', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        const Text('경로 파악', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       ],
                     ),
                   ],
@@ -233,30 +243,72 @@ class _HomeState extends State<Home> {
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.43,
+                      height: 150,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.all(12),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('대피소 위치 >', style: TextStyle(color: Colors.white, fontSize: 14)),
-                          const Text('Shelter Location', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                          const SizedBox(height: 8),
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00BB6D),
-                              borderRadius: BorderRadius.circular(8),
+                          // 상단 (4.5 비율)
+                          Expanded(
+                            flex: 45,
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              alignment: Alignment.topLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    '대피소 위치 >',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Shelter Location',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('-', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                Image.asset('assets/shelter.png', height: 30),
-                              ],
+                          ),
+                          // 하단 (5.5 비율)
+                          Expanded(
+                            flex: 55,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF00BB6D),
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(12),
+                                  bottomRight: Radius.circular(12),
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Stack(
+                                children: [
+                                  const Positioned(
+                                    left: 0,
+                                    top: 0,
+                                    right: 0,
+                                    child: Text(
+                                      '가까운 대피소를 확인하고\n전체 목록에서 위치를 찾아보세요.',
+                                      style: TextStyle(color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Image.asset('assets/shelter.png', height: 30),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -266,34 +318,76 @@ class _HomeState extends State<Home> {
                   // Route Box
                   GestureDetector(
                     onTap: () {
-                      _onItemTapped(2);
+                      _onItemTapped(2); // 원하는 위젯으로 이동
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.43,
+                      height: 150,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.all(12),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('경로 안내 >', style: TextStyle(color: Colors.white, fontSize: 14)),
-                          const Text('Route Guidance', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                          const SizedBox(height: 8),
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF6200),
-                              borderRadius: BorderRadius.circular(8),
+                          // 상단 (4.5 비율)
+                          Expanded(
+                            flex: 45,
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              alignment: Alignment.topLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    '경로 안내 >',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Route Guidance',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('-', style: TextStyle(color: Colors.white, fontSize: 16)),
-                                Image.asset('assets/route.png', height: 30),
-                              ],
+                          ),
+                          // 하단 (5.5 비율)
+                          Expanded(
+                            flex: 55,
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF6200),
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(12),
+                                  bottomRight: Radius.circular(12),
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Stack(
+                                children: [
+                                  const Positioned(
+                                    left: 0,
+                                    top: 0,
+                                    right: 0,
+                                    child: Text(
+                                      '지금 위치에서 경로를 안내받고\n빠르게 출구로 이동해보세요.',
+                                      style: TextStyle(color: Colors.white, fontSize: 12),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Image.asset('assets/route.png', height: 30),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

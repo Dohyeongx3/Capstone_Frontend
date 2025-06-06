@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
-import 'register.dart';
+
 import 'onboard.dart';
 import 'IDPWfind.dart';
 import 'home.dart';

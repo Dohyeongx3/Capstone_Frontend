@@ -11,6 +11,7 @@ import 'group.dart';
 import 'home.dart';
 import 'info.dart';
 import 'login.dart';
+import 'notification.dart';
 import 'setting.dart';
 
 class Shelter extends StatefulWidget {
@@ -91,7 +92,7 @@ class _ShelterState extends State<Shelter> {
       case 3:
         return 'assets/earthquake_shelter.png';
       case 4:
-        return 'assets/tsunami.png';
+        return 'assets/tsunami_shelter.png';
       default:
         return 'assets/default.png';
     }
@@ -255,9 +256,17 @@ class _ShelterState extends State<Shelter> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Icon(Icons.search),
-              const SizedBox(width: 10),
-              const Icon(Icons.notifications_outlined),
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationPage(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
