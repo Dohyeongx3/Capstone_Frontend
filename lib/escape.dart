@@ -139,7 +139,7 @@ class _EscapeState extends State<Escape> {
           DraggableScrollableSheet(
             controller: _sheetController,
             initialChildSize: 0.41,
-            minChildSize: 0.2,
+            minChildSize: 0.15,
             maxChildSize: 0.41,
             builder: (context, scrollController) {
               return Container(
@@ -182,7 +182,7 @@ class _EscapeState extends State<Escape> {
                               });
 
                               _sheetController.animateTo(
-                                _isExpanded ? 0.41 : 0.2,
+                                _isExpanded ? 0.41 : 0.15,
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
                               );
