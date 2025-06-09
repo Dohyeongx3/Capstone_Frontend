@@ -25,7 +25,7 @@ class _InfoState extends State<Info> {
     {'name': '도심 홍수', 'type': 0, 'image':'assets/flood.png'},
     {'name': '집중 호우', 'type': 0, 'image':'assets/rain.png'},
     {'name': '돌발 낙뢰', 'type': 0, 'image':'assets/lightning.png'},
-    {'name': '대량 적설', 'type': 0, 'image':'assets/heavysnow.png'},
+    {'name': '대설', 'type': 0, 'image':'assets/heavysnow.png'},
     {'name': '이상 폭염', 'type': 0, 'image':'assets/heatwave.png'},
     {'name': '지진', 'type': 1, 'image':'assets/earthquake.png'},
     {'name': '지진해일', 'type': 1, 'image':'assets/earthquaketsunami.png'},
@@ -118,10 +118,21 @@ class _InfoState extends State<Info> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildCustomAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (!didPop) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Home()),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: _buildCustomAppBar(),
+        body: _buildBody(),
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
     );
   }
 
@@ -421,6 +432,24 @@ class _InfoState extends State<Info> {
                       MaterialPageRoute(builder: (context) => const RainfallPage()),
                     );
                   }
+                  if (item['name'] == '돌발 낙뢰') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LightningPage()),
+                    );
+                  }
+                  if (item['name'] == '대설') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HeavysnowPage()),
+                    );
+                  }
+                  if (item['name'] == '이상 폭염') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HeatwavePage()),
+                    );
+                  }
                 },
                 child: Container(
                   height: 80,
@@ -472,29 +501,72 @@ class _InfoState extends State<Info> {
           final item = filteredItems[i * 2 + j];
           if (item['name'] == '') return const SizedBox.shrink();
 
-          return SizedBox(
-            height: 80,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,   // 수평 가운데 정렬
-                crossAxisAlignment: CrossAxisAlignment.center, // 수직 가운데 정렬
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: item['image'] != ''
-                        ? AssetImage(item['image']) as ImageProvider
-                        : null,
-                    backgroundColor: Colors.grey[300],
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    item['name'],
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                if (item['name'] == '대형 화재') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BlazePage()),
+                  );
+                }
+                if (item['name'] == '산업 폭발') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ExplosionPage()),
+                  );
+                }
+                if (item['name'] == '건축물붕괴') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CollapsePage()),
+                  );
+                }
+                if (item['name'] == '댐붕괴') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DamPage()),
+                  );
+                }
+                if (item['name'] == '대규모 산불') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WildfirePage()),
+                  );
+                }
+                if (item['name'] == '도로터널사고') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TunnelPage()),
+                  );
+                }
+              },
+              child: Container(
+                height: 80,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage: item['image'] != ''
+                          ? AssetImage(item['image']) as ImageProvider
+                          : null,
+                      backgroundColor: Colors.grey[300],
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Text(
+                      item['name'],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

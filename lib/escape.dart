@@ -30,11 +30,11 @@ class _EscapeState extends State<Escape> {
   void initState() {
     super.initState();
     _currentSelectedIndex = widget.selectedIndex;
-    _scanAndSendWiFiData(); // Wi-Fi 정보 스캔 및 전송
+    _startPeriodicUpdate(); // Wi-Fi 정보 스캔 및 전송
   }
 
-  void _startPeriodicUpdate() {  // 0.5초마다 서버에 요청 보내기
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+  void _startPeriodicUpdate() {  // 3초(3000ms)마다 서버에 요청 보내기
+    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
       _scanAndSendWiFiData();
     });
   }
@@ -270,7 +270,7 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
   void paint(Canvas canvas, Size size) {
     final double scaleX = size.width / 72.0;
     final double scaleY = size.height / 23.0;
-    double toFlutterY(num y) => size.height - (y * scaleY);
+    double toFlutterY(num y) => size.height - (y * scaleY)-6;
 
     final paint = Paint()
       ..color = Colors.red
