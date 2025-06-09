@@ -6,6 +6,8 @@ import 'home.dart';
 import 'info.dart';
 import 'notification.dart';
 import 'setting.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key}) : super(key: key);
@@ -17,18 +19,25 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   int _selectedIndex = 4; // 설정 화면에서 진입했기 때문에 기본 인덱스는 4
 
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
-  final List<Map<String, dynamic>> UserData = [
-    {
-      'name': '사용자 이름',
-      'year': 2000,
-      'month': 11,
-      'day': 11,
-      'phone': '010-1234-5678',
-      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
-      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
+  //TODO: 프로필 호출 테스트
+  Map<String, dynamic>? userData;
+
+  Future<void> fetchUserData(String globalUid) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      setState(() {
+        userData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
     }
-  ];
+  }
 
   // TextEditingController 선언
   late TextEditingController _nameController;
@@ -41,7 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     super.initState();
 
-    final user = UserData.first;
+    final user = userData!;
 
     _nameController = TextEditingController(text: user['name']);
     _yearController = TextEditingController(text: user['year'].toString());
@@ -90,7 +99,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         });
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Group()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupPage()));
         break;
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const Setting()));

@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'onboard.dart';
 import 'IDPWfind.dart';
 import 'home.dart';
+import 'globals.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -54,8 +55,9 @@ class _LoginState extends State<Login> {
 
           try {
             // Firebase에 로그인 시도
-            await FirebaseAuth.instance.signInWithCustomToken(customToken);
+            UserCredential userCredential = await FirebaseAuth.instance.signInWithCustomToken(customToken);
 
+            globalUid = userCredential.user?.uid;
             // 로그인 성공 시 홈 화면으로 이동
             Navigator.pushReplacement(
               context,

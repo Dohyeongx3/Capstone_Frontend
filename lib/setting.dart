@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
@@ -24,18 +25,25 @@ class _SettingState extends State<Setting> {
   bool isNotificationEnabled = false;
   bool isTTSEnabled = false;
 
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
-  final List<Map<String, dynamic>> UserData = [
-    {
-      'name': '사용자 이름',
-      'year': 2000,
-      'month': 11,
-      'day': 11,
-      'phone': '010-1234-5678',
-      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
-      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
+  //TODO: 프로필 호출 테스트
+  Map<String, dynamic>? userData;
+
+  Future<void> fetchUserData(String globalUid) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      setState(() {
+        userData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
     }
-  ];
+  }
 
   @override
   void initState() {
@@ -100,7 +108,7 @@ class _SettingState extends State<Setting> {
         });
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Group()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupPage()));
         break;
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const Setting()));
@@ -149,7 +157,7 @@ class _SettingState extends State<Setting> {
   }
 
   Widget _buildBody() {
-    final user = UserData.first;
+    final user = userData!;
 
     final String name = user['name'];
     final String phone = user['phone'];

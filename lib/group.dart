@@ -6,16 +6,29 @@ import 'info.dart';
 import 'notification.dart';
 import 'setting.dart';
 import 'group_template.dart';
+import 'globals.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Group extends StatefulWidget {
-  const Group({Key? key}) : super(key: key);
+class GroupPage extends StatefulWidget {
+  const GroupPage({Key? key}) : super(key: key);
 
   @override
-  State<Group> createState() => _GroupState();
+  State<GroupPage> createState() => _GroupState();
 }
 
-class _GroupState extends State<Group> {
+class _GroupState extends State<GroupPage> {
   int _selectedIndex = 3;
+
+  // TODO: 이 부분 제대로 되는지 확인 요망
+  // 오버라이드 작성 안하니까 에러 뜸
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Group Page')),
+      body: Center(child: Text('Selected Index: $_selectedIndex')),
+    );
+  }
 
   void _onItemTapped(int index) {
     int previousIndex = _selectedIndex;  // 화면을 전환하기 전에 현재 selectedIndex를 저장
@@ -46,57 +59,84 @@ class _GroupState extends State<Group> {
         });
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Group()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupPage()));
         break;
       case 4:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Setting()));
+        Navigator.push(context, MaterialPageRoute(builder: (context ) => const Setting()));
         break;
     }
   }
 
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
-  final List<Map<String, dynamic>> UserData = [
-    {
-      'name': '사용자 이름',
-      'year': 2000,
-      'month': 11,
-      'day': 11,
-      'phone': '010-1234-5678',
-      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
-      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
-    }
-  ];
 
-  //TODO: DB에서 그룹 내 속한 모든 상태가 DANGER인사람 모아서 호출
-  final List<Map<String, String?>> dangerMembers = [
-    {
-      'name': '홍길동',
-      'image': 'assets/default_profile.png',
-    },
-    {
-      'name': '김길동',
-      'image': 'assets/default_profile.png',
-    },
-    {
-      'name': null, // 이름 없음
-      'image': null, // 이미지 없음
-    },
-  ];
+  // TODO: 사용자 프로필 호출 테스트
+  Map<String, dynamic>? userData;
 
-  //TODO: DB에서 사용자가 속한 모든 그룹 호출
-  final List<Map<String, dynamic>> groups = [
-    {'name': '그룹1', 'members': 4 ,'backgroundimage': 'assets/default_profile.png'},
-    {'name': '그룹2', 'members': 6 ,'backgroundimage': 'assets/default_profile.png'},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+  Future<void> fetchUserData(String globalUid) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
     );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      setState(() {
+        userData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
   }
+
+
+  //TODO: 위험 멤버 호출 테스트
+  List<Map<String, String?>> dangerMembers = [];
+
+  Future<void> fetchDangerMembers(String globalUid) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/danger'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data'];
+      setState(() {
+        dangerMembers = data.map<Map<String, String?>>((member) => {
+          'name': member['name'],
+          'image': member['image'],
+        }).toList();
+      });
+    } else {
+      print('위험 멤버 불러오기 실패');
+    }
+  }
+
+
+  //TODO: 그룹 호출 테스트
+  List<Map<String, dynamic>> groups = [];
+
+  Future<void> fetchGroups(String globalUid) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data'];
+      setState(() {
+        groups = data.map<Map<String, dynamic>>((group) => {
+          'name': group['name'],
+          'members': group['members'],
+          'backgroundimage': group['backgroundimage'],
+        }).toList();
+      });
+    } else {
+      print('그룹 목록 불러오기 실패');
+    }
+  }
+
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -137,7 +177,7 @@ class _GroupState extends State<Group> {
   }
 
   Widget _buildBody() {
-    final user = UserData.first;
+    final user = userData!;
 
     Color statusColor;
     String statusText;

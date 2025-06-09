@@ -111,7 +111,7 @@ class _HomeState extends State<Home> {
         });
         break;
       case 3:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Group()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupPage()));
         break;
       case 4:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const Setting()));

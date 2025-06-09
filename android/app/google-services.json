@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464478048893",
+    "project_id": "capstone-project-jjw8584",
+    "storage_bucket": "capstone-project-jjw8584.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464478048893:android:6ba51fa8f13a2ec4725714",
+        "android_client_info": {
+          "package_name": "com.example.safetyandmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6xw5v3pZQMCj1YDCZg0x6fYDQZtOAUrE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
