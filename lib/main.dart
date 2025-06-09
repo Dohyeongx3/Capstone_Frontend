@@ -84,11 +84,11 @@ class _SplashScreenState extends State<SplashScreen> {
             ],
           ),
           // 저작권 텍스트
-          const Positioned(
-            bottom: 20,
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 16,
             left: 0,
             right: 0,
-            child: Center(
+            child: const Center(
               child: Text(
                 'ⓒ 2025 SAM. All rights reserved.',
                 style: TextStyle(

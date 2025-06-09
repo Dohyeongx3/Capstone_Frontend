@@ -23,6 +23,13 @@ class _HomeState extends State<Home> {
   String _currentLocation = '위치 확인 중...';
   String _currentAddress = '주소 확인 중...';
 
+  // TODO:DB에서 현재 로그인된 사용자 위험 상태 연결
+  final List<Map<String, dynamic>> userStatusList = [
+    {
+      'status': 'SAFE', // 혹은 'DANGER', 'CHECKING'
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -122,7 +129,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    const String currentState = "SAFE";
+    final String currentState = userStatusList.first['status'];
 
     Color backgroundColor;
     String imageAsset;
@@ -186,6 +193,7 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('현재 위치: $_currentLocation', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              //TODO:여기 currentAddress 값을 그룹에 현재위치로써 서버에서 주고 받아야 해요
               Text('주소: $_currentAddress', style: const TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 10),
               Container(

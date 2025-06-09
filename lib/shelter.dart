@@ -35,6 +35,7 @@ class _ShelterState extends State<Shelter> {
 
   Position? _currentPosition;
 
+  // TODO:DB에서 대피소API에서 받아온 데이터 연결
   final List<Map<String, dynamic>> shelterList = [
     {
       'name': '중앙 한파쉼터',

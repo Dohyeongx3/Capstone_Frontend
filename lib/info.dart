@@ -399,27 +399,36 @@ class _InfoState extends State<Info> {
               return const SizedBox.shrink();
             }
 
-            return GestureDetector(
-              onTap: () {
-                if (item['name'] == '강력 태풍') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TyphoonPage()),
-                  );
-                }
-                if (item['name'] == '도심 홍수') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FloodPage()),
-                  );
-                }
-              },
-              child: SizedBox(
-                height: 80,
-                child: Center(
+            return Material(
+              color: Colors.transparent, // 배경 투명
+              child: InkWell(
+                onTap: () {
+                  if (item['name'] == '강력 태풍') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TyphoonPage()),
+                    );
+                  }
+                  if (item['name'] == '도심 홍수') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FloodPage()),
+                    );
+                  }
+                  if (item['name'] == '집중 호우') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RainfallPage()),
+                    );
+                  }
+                },
+                child: Container(
+                  height: 80,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  alignment: Alignment.center,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,  // 수평 가운데 정렬
-                    crossAxisAlignment: CrossAxisAlignment.center, // 수직 가운데 정렬
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
                         radius: 20,

@@ -34,108 +34,112 @@ class _DisasterPageTemplateState extends State<DisasterPageTemplate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appBarTitle),
+        title: Text(
+          widget.appBarTitle,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         centerTitle: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 상단 정보
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.headerTitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.disasterName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0073FF),
-                      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 상단 정보
+              Text(widget.headerTitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.disasterName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0073FF),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Image.asset(
-                    widget.mainImageAsset,
-                    height: 150,
-                    fit: BoxFit.contain,
                   ),
-                ),
-                const SizedBox(height: 24),
-                ...widget.infoRows.map((row) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: InfoRow(title: row.title, content: row.content),
-                )),
-                const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    '*업데이트: ${widget.updateDate}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Divider(color: Colors.grey, thickness: 0.5),
-              ],
-            ),
-          ),
-          // 필터바
-          Center(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(widget.tabFilters.length, (index) {
-                    final bool isSelected = _selectedTabIndex == index;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedTabIndex = index;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF0073FF) : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: const Color(0xFF0073FF),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Text(
-                          widget.tabFilters[index],
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Image.asset(
+                  widget.mainImageAsset,
+                  fit: BoxFit.contain,
                 ),
               ),
-            ),
+              const SizedBox(height: 24),
+              ...widget.infoRows.map((row) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InfoRow(title: row.title, content: row.content),
+              )),
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
+                  '*업데이트: ${widget.updateDate}',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Divider(color: Colors.grey, thickness: 0.5),
+
+              const SizedBox(height: 16),
+
+              // 필터바
+              Center(
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(widget.tabFilters.length, (index) {
+                        final bool isSelected = _selectedTabIndex == index;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedTabIndex = index;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? const Color(0xFF0073FF) : Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: const Color(0xFF0073FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              widget.tabFilters[index],
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // 탭별 내용
+              widget.tabContents[_selectedTabIndex],
+            ],
           ),
-          // 탭별 내용
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, MediaQuery.of(context).padding.bottom + 16.0,),
-              child: widget.tabContents[_selectedTabIndex],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
