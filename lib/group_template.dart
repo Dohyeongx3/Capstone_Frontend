@@ -2,48 +2,85 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'notification.dart';
+import 'globals.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class GroupPageTemplate extends StatelessWidget {
+class GroupPageTemplate extends StatefulWidget {
   const GroupPageTemplate({super.key});
 
   @override
+  State<GroupPageTemplate> createState() => _GroupPageTemplateState();
+}
+
+class _GroupPageTemplateState extends State<GroupPageTemplate> {
+
+  // TODO: DB API 수정 필요
+  Map<String, dynamic>? groupInfo;
+
+  Future<void> fetchGroupData() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      setState(() {
+        groupInfo = {
+          'backgroundImage': data['backgroundImage'],
+          'groupNumber': data['groupNumber'],
+          'groupName': data['groupName'],
+          'inviteCode': data['inviteCode'],
+        };
+      });
+
+      await fetchGroupMembers(data['groupNumber']);
+
+    } else {
+      print('그룹 정보 불러오기 실패');
+    }
+  }
+
+  // TODO: DB API 수정 필요
+  List<Map<String, dynamic>> members = [];
+
+  Future<void> fetchGroupMembers(String groupId) async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/members'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'groupId': groupId }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['members'];
+
+      setState(() {
+        members = List<Map<String, dynamic>>.from(data.map((member) => {
+          'name': member['name'],
+          'isLeader': member['isLeader'],
+          'status': member['status'],
+          'location': member['location'],
+          'relation': member['relation'],
+          'profileImage': member['profileImage'],
+        }));
+      });
+    } else {
+      print('멤버 불러오기 실패');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGroupData(); // 최초 실행 시 서버에서 데이터 받아오기
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: DB에서 해당 그룹에 해당하는 정보들 맵핑
-    final Map<String, dynamic> groupInfo = {
-      'backgroundImage': 'assets/default.png',
-      'groupNumber': '그룹번호',
-      'groupName': '그룹명',
-      'inviteCode': 'ABC123',
-    };
-
-    // TODO: DB에서 해당 그룹에 해당하는 그룹원 정보들 맵핑
-    final List<Map<String, dynamic>> members = [
-      {
-        'name': '그룹장',
-        'isLeader': true,
-        'status': '안전',
-        'location': '위치1',
-        'relation': '관계1',
-        'profileImage': 'assets/default.png', //
-      },
-      {
-        'name': '멤버1',
-        'isLeader': false,
-        'status': '위험',
-        'location': '위치2',
-        'relation': '관계2',
-        'profileImage': 'assets/default.png',
-      },
-      {
-        'name': '멤버2',
-        'isLeader': false,
-        'status': '안전',
-        'location': '위치3',
-        'relation': '관계3',
-        'profileImage': 'assets/default.png',
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -70,7 +107,7 @@ class GroupPageTemplate extends StatelessWidget {
           const SizedBox(width: 16),
         ],
       ),
-      body: _buildBody(context, groupInfo, members),
+      body: _buildBody(context, groupInfo!, members),
     );
   }
 

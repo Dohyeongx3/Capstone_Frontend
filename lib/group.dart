@@ -20,13 +20,12 @@ class GroupPage extends StatefulWidget {
 class _GroupState extends State<GroupPage> {
   int _selectedIndex = 3;
 
-  // TODO: 이 부분 제대로 되는지 확인 요망
-  // 오버라이드 작성 안하니까 에러 뜸
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Group Page')),
-      body: Center(child: Text('Selected Index: $_selectedIndex')),
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -68,10 +67,10 @@ class _GroupState extends State<GroupPage> {
   }
 
 
-  // TODO: 사용자 프로필 호출 테스트
+  // TODO: 사용자 프로필 호출 테스트, DB API 수정 필요
   Map<String, dynamic>? userData;
 
-  Future<void> fetchUserData(String globalUid) async {
+  Future<void> fetchUserData() async {
     final response = await http.post(
       Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
       headers: { 'Content-Type': 'application/json' },
@@ -79,7 +78,7 @@ class _GroupState extends State<GroupPage> {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+      final data = jsonDecode(response.body);
       setState(() {
         userData = data;
       });
@@ -89,10 +88,10 @@ class _GroupState extends State<GroupPage> {
   }
 
 
-  //TODO: 위험 멤버 호출 테스트
+  //TODO: 위험 멤버 호출 테스트, DB API 수정 필요
   List<Map<String, String?>> dangerMembers = [];
 
-  Future<void> fetchDangerMembers(String globalUid) async {
+  Future<void> fetchDangerMembers() async {
     final response = await http.post(
       Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/danger'),
       headers: { 'Content-Type': 'application/json' },
@@ -113,10 +112,10 @@ class _GroupState extends State<GroupPage> {
   }
 
 
-  //TODO: 그룹 호출 테스트
+  //TODO: 그룹 호출 테스트, DB API 수정 필요
   List<Map<String, dynamic>> groups = [];
 
-  Future<void> fetchGroups(String globalUid) async {
+  Future<void> fetchGroups() async {
     final response = await http.post(
       Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
       headers: { 'Content-Type': 'application/json' },
