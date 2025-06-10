@@ -194,6 +194,8 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
   PathPainter(this.path, this.userX, this.userY, this.currentFloor);
 
   int? extractFloor(String nodeName) {  //현재 사용자 위치 정보 층과 같은 노드 필터링
+    if (nodeName.startsWith("B1")) return -1; //지하 노드 필터링 추가
+
     final fMatch = RegExp(r'^(\d)F_').firstMatch(nodeName);
     if (fMatch != null) return int.parse(fMatch.group(1)!);
 
@@ -205,8 +207,13 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / 72.0;
-    final double scaleY = size.height / 23.0;
+    final bool isBasement = currentFloor == -1;
+
+    // 지하일 땐 x: 16~72 → 56칸, y: 0~19 → 19칸
+    final double scaleX = isBasement ? size.width / (72.0 - 16.0) : size.width / 72.0;
+    final double scaleY = isBasement ? size.height / 19.0 : size.height / 23.0;
+
+    double toFlutterX(num x) => isBasement ? (x - 16.0) * scaleX: x * scaleX;
     double toFlutterY(num y) => size.height - (y * scaleY);
 
     final paint = Paint()
@@ -221,9 +228,9 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
     }).toList();
 
     for (int i = 0; i < filtered.length - 1; i++) {  // 탈출 경로 노드 좌표 찍기
-      final x1 = (filtered[i]['x'] as num) * scaleX;
+      final x1 = toFlutterX(filtered[i]['x']);
       final y1 = toFlutterY(filtered[i]['y']);
-      final x2 = (filtered[i + 1]['x'] as num) * scaleX;
+      final x2 = toFlutterX(filtered[i + 1]['x']);
       final y2 = toFlutterY(filtered[i + 1]['y']);
 
       canvas.drawLine(Offset(x1, y1), Offset(x2, y2), paint);  // 경로 그리기
