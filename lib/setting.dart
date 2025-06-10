@@ -26,17 +26,15 @@ class _SettingState extends State<Setting> {
   bool isTTSEnabled = false;
 
   //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
-  final List<Map<String, dynamic>> UserData = [
-    {
-      'name': '사용자 이름',
-      'year': 2000,
-      'month': 11,
-      'day': 11,
-      'phone': '010-1234-5678',
-      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
-      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
-    }
-  ];
+  final Map<String, dynamic> UserData = {
+    'name': '사용자 이름',
+    'year': 2000,
+    'month': 11,
+    'day': 11,
+    'phone': '010-1234-5678',
+    'status': 'SAFE',
+    'profileImage': 'assets/default.png',
+  };
 
   @override
   void initState() {
@@ -302,7 +300,7 @@ class _SettingState extends State<Setting> {
   }
 
   Widget _buildBody() {
-    final user = UserData.first;
+    final user = UserData;
 
     final String name = user['name'];
     final String phone = user['phone'];

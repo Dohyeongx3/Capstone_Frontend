@@ -568,7 +568,7 @@ class _LightningPageState extends State<LightningPage> {
             SectionBlock(
               title: '정의',
               items: [
-                '집중호우는 짧은 시간 동안 매우 많은 비가 집중적으로 내리는 현상으로 하수도, 배수 시설이 감당하지 못해 침수, 산사태, 교통 두절 등 피해로 이어집니다.',
+                '낙뢰는 구름과 지면, 구름 간 전기적 불균형으로 생기는 방전 현상으로 순간적으로 매우 높은 전압과 강한 전류를 발생시켜 인명 피해와 화재, 정전 등을 유발합니다.',
               ],
             ),
             SectionBlock(

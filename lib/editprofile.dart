@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'escape.dart';
 import 'group.dart';
@@ -18,17 +20,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
   int _selectedIndex = 4; // 설정 화면에서 진입했기 때문에 기본 인덱스는 4
 
   //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
-  final List<Map<String, dynamic>> UserData = [
-    {
-      'name': '사용자 이름',
-      'year': 2000,
-      'month': 11,
-      'day': 11,
-      'phone': '010-1234-5678',
-      'status': 'SAFE', // 'SAFE', 'DANGER', 'CHECKING'
-      'profileImage': 'assets/default.png', // 사용자 지정 이미지 경로
-    }
-  ];
+  final Map<String, dynamic> UserData = {
+    'name': '사용자 이름',
+    'year': 2000,
+    'month': 11,
+    'day': 11,
+    'phone': '010-1234-5678',
+    'status': 'SAFE',
+    'profileImage': 'assets/default.png',
+  };
 
   // TextEditingController 선언
   late TextEditingController _nameController;
@@ -37,11 +37,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _dayController;
   late TextEditingController _phoneController;
 
+  File? _selectedImage;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    final user = UserData.first;
+    final user = UserData;
 
     _nameController = TextEditingController(text: user['name']);
     _yearController = TextEditingController(text: user['year'].toString());
@@ -154,7 +167,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: AssetImage('assets/default.png'),
+                  backgroundImage: _selectedImage != null
+                      ? FileImage(_selectedImage!)
+                      : const AssetImage('assets/default.png') as ImageProvider,
                   backgroundColor: Colors.grey[200],
                 ),
                 Positioned(
@@ -168,9 +183,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                      onPressed: () {
-                        // 카메라 아이콘 클릭 시 처리
-                      },
+                      onPressed: _pickImage,
                     ),
                   ),
                 ),
@@ -282,7 +295,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 return;
                 }
 
+
                 // TODO:수정하기 버튼 누르면 위 수정사항 리스트와 DB에 반영
+                // TODO:이 버튼 누르면 이미지도 유저 프로필 전체에 반영되도록 수정
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0073FF),

@@ -129,14 +129,14 @@ class _InfoState extends State<Info> {
         }
       },
       child: Scaffold(
-        appBar: _buildCustomAppBar(),
+        appBar: _buildAppBar(),
         body: _buildBody(),
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
     );
   }
 
-  AppBar _buildCustomAppBar() {
+  AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 1,
