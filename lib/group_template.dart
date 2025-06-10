@@ -15,7 +15,7 @@ class GroupPageTemplate extends StatefulWidget {
 
 class _GroupPageTemplateState extends State<GroupPageTemplate> {
 
-  // TODO: DB API 수정 필요
+  // TODO: 그룹 정보 호출, DB API 수정 필요
   Map<String, dynamic>? groupInfo;
 
   Future<void> fetchGroupData() async {
@@ -44,7 +44,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
     }
   }
 
-  // TODO: DB API 수정 필요
+  // TODO: 그룹 상세 정보 호출, DB API 수정 필요
   List<Map<String, dynamic>> members = [];
 
   Future<void> fetchGroupMembers(String groupId) async {
