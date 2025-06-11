@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'escape.dart';
@@ -65,16 +66,234 @@ class _GroupState extends State<GroupPage> {
         break;
     }
   }
-
-
+  /*
   // TODO: 사용자 프로필 호출 테스트, DB API 수정 필요
-  Map<String, dynamic>? userData;
+  Map<String, dynamic>? UserData;
 
   Future<void> fetchUserData() async {
     final response = await http.post(
       Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
       headers: { 'Content-Type': 'application/json' },
       body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        UserData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
+  }
+
+
+  //TODO: 위험 멤버 호출 테스트, DB API 수정 필요
+  List<Map<String, String?>> dangerMembers = [];
+
+  Future<void> fetchDangerMembers() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/danger'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data'];
+      setState(() {
+        dangerMembers = data.map<Map<String, String?>>((member) => {
+          'name': member['name'],
+          'image': member['image'],
+        }).toList();
+      });
+    } else {
+      print('위험 멤버 불러오기 실패');
+    }
+  }
+
+
+  //TODO: 그룹 호출 테스트, DB API 수정 필요
+  List<Map<String, dynamic>> groups = [];
+
+  Future<void> fetchGroups() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data'];
+      setState(() {
+        groups = data.map<Map<String, dynamic>>((group) => {
+          'name': group['name'],
+          'members': group['members'],
+          'backgroundimage': group['backgroundimage'],
+        }).toList();
+      });
+    } else {
+      print('그룹 목록 불러오기 실패');
+    }
+  }
+  */
+  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  final Map<String, dynamic> UserData = {
+    'name': '사용자 이름',
+    'year': 2000,
+    'month': 11,
+    'day': 11,
+    'phone': '010-1234-5678',
+    'status': 'SAFE',// 'SAFE', 'DANGER', 'CHECKING'
+    'profileImage': 'assets/default.png',
+    'inviteCode': 'ABC123', // 유저 초대코드
+  };
+  //TODO: DB에서 그룹 내 속한 모든 상태가 DANGER인사람 모아서 호출
+  final List<Map<String, String?>> dangerMembers = [
+    {
+      'name': '홍길동',
+      'image': 'assets/default_profile.png',
+    },
+    {
+      'name': '김길동',
+      'image': 'assets/default_profile.png',
+    },
+    {
+      'name': null, // 이름 없음
+      'image': null, // 이미지 없음
+    },
+  ];
+  //TODO: DB에서 사용자가 속한 모든 그룹 호출
+  final List<Map<String, dynamic>> groups = [
+    {'name': '그룹1', 'members': 4 ,'backgroundimage': 'assets/default_profile.png'},
+    {'name': '그룹2', 'members': 6 ,'backgroundimage': 'assets/default_profile.png'},
+  ];
+
+  Future<void> GroupInviteCodeDialog(BuildContext context) async {
+    final TextEditingController _inviteCodeController = TextEditingController();
+
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icon_popup.png',
+                    width: 80,
+                    height: 80,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '[그룹 들어가기]',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '친구에게 받은 그룹코드를 입력해주세요.',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _inviteCodeController,
+                    decoration: InputDecoration(
+                      hintText: '그룹 코드를 입력해주세요.',
+                      hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(_inviteCodeController.text);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0073FF),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        '입력 완료',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      // TODO: 그룹 코드 처리 로직 추가
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('입력한 그룹코드: $result')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (!didPop) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Home()),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
     );
 
     if (response.statusCode == 200) {
@@ -176,7 +395,8 @@ class _GroupState extends State<GroupPage> {
   }
 
   Widget _buildBody() {
-    final user = userData!;
+    final user = UserData;
+    //final user = UserData!;
 
     Color statusColor;
     String statusText;
@@ -275,9 +495,9 @@ class _GroupState extends State<GroupPage> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Text(
-                        '초대코드 | ABC123',
-                        style: TextStyle(
+                      Text(
+                        '초대코드 | ${UserData['inviteCode']}',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                         ),
@@ -286,7 +506,9 @@ class _GroupState extends State<GroupPage> {
                       IconButton(
                         icon: const Icon(Icons.copy, size: 18, color: Colors.white),
                         onPressed: () {
-                          Clipboard.setData(const ClipboardData(text: 'ABC123')); // 복사
+                          Clipboard.setData(
+                            ClipboardData(text: UserData['inviteCode']),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('초대코드가 복사되었습니다'),
@@ -296,7 +518,7 @@ class _GroupState extends State<GroupPage> {
                         },
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
@@ -458,7 +680,30 @@ class _GroupState extends State<GroupPage> {
                   }).toList(),
                 ],
               ),
-            )
+            ),
+
+            const SizedBox(height: 16),
+            const Text('추가', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+
+            GestureDetector(
+              onTap: () {
+                GroupInviteCodeDialog(context);
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0073FF),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  '그룹 들어가기',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           ],
         ),
       ),

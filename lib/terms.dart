@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 // 이용약관 페이지
 class TermsOfServicePage extends StatelessWidget {
   @override

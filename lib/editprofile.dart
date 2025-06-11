@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'escape.dart';
 import 'group.dart';
@@ -45,6 +47,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _monthController;
   late TextEditingController _dayController;
   late TextEditingController _phoneController;
+
+  File? _selectedImage;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -163,7 +178,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: AssetImage('assets/default.png'),
+                  backgroundImage: _selectedImage != null
+                      ? FileImage(_selectedImage!)
+                      : const AssetImage('assets/default.png') as ImageProvider,
                   backgroundColor: Colors.grey[200],
                 ),
                 Positioned(
@@ -177,9 +194,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                      onPressed: () {
-                        // 카메라 아이콘 클릭 시 처리
-                      },
+                      onPressed: _pickImage,
                     ),
                   ),
                 ),
@@ -291,7 +306,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 return;
                 }
 
+
                 // TODO:수정하기 버튼 누르면 위 수정사항 리스트와 DB에 반영
+                // TODO:이 버튼 누르면 이미지도 유저 프로필 전체에 반영되도록 수정
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0073FF),

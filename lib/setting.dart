@@ -3,6 +3,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'account.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
@@ -25,6 +27,7 @@ class _SettingState extends State<Setting> {
   bool isNotificationEnabled = false;
   bool isTTSEnabled = false;
 
+  /*
   //TODO: 프로필 호출 테스트
   Map<String, dynamic>? userData;
 
@@ -43,7 +46,17 @@ class _SettingState extends State<Setting> {
     } else {
       print('사용자 정보 불러오기 실패');
     }
-  }
+  }*/
+  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  final Map<String, dynamic> UserData = {
+    'name': '사용자 이름',
+    'year': 2000,
+    'month': 11,
+    'day': 11,
+    'phone': '010-1234-5678',
+    'status': 'SAFE',
+    'profileImage': 'assets/default.png',
+  };
 
   @override
   void initState() {
@@ -76,6 +89,147 @@ class _SettingState extends State<Setting> {
         isLocationEnabled = false;
       });
       openAppSettings(); // 설정으로 유도
+    }
+  }
+
+  Future<void> showLogoutDialog(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Stack(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        '[로그아웃]',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Image.asset(
+                        'assets/icon_popup.png',
+                        width: 80,
+                        height: 80,
+                      ),
+                      const SizedBox(height: 16),
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: const TextSpan(
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          children: [
+                            TextSpan(text: '현재 기기에서 '),
+                            TextSpan(
+                              text: '로그아웃',
+                              style: TextStyle(
+                                color: Color(0xFF0073FF),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(text: ' 하시겠습니까?\n'),
+                            TextSpan(
+                              text:
+                              '로그아웃 후에는 다시 로그인해야 서비스를 이용하실 수 있습니다.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+                IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => Navigator.of(context).pop(false),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF949494),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(16),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: const Text(
+                              '취소',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            // TODO: 로그아웃 처리 로직 구현
+                            Navigator.of(context).pop(true);
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF0073FF),
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(16),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: const Text(
+                              '로그아웃',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(false),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (shouldLogout == true) {
+      // TODO: 실제 로그아웃 처리 및 화면 이동 구현
     }
   }
 
@@ -118,10 +272,21 @@ class _SettingState extends State<Setting> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (!didPop) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Home()),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
     );
   }
 
@@ -157,7 +322,8 @@ class _SettingState extends State<Setting> {
   }
 
   Widget _buildBody() {
-    final user = userData!;
+    //final user = userData!;
+    final user = UserData;
 
     final String name = user['name'];
     final String phone = user['phone'];
@@ -350,7 +516,10 @@ class _SettingState extends State<Setting> {
           const SizedBox(height: 12),
           InkWell(
             onTap: () {
-              // TODO:비밀번호 변경 로직
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PasswordResetPage()),
+              );
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +554,7 @@ class _SettingState extends State<Setting> {
           const SizedBox(height: 12),
           InkWell(
             onTap: () {
-              // TODO:로그아웃 로직
+              showLogoutDialog(context);
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,7 +588,10 @@ class _SettingState extends State<Setting> {
           const SizedBox(height: 12),
           InkWell(
             onTap: () {
-              // TODO:회원 탈퇴 로직
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AccountDeletePage()),
+              );
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

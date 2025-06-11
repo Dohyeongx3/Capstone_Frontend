@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -119,14 +120,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<bool> _onWillPop() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final String currentState = userStatusList.first['status'];
@@ -162,10 +155,158 @@ class _HomeState extends State<Home> {
         statusLabel = "-";
     }
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
+    return PopScope(
+      canPop: false, // 직접 제어하므로 false
+        onPopInvokedWithResult: (bool didPop, dynamic result) async {
+          if (!didPop) {
+            final shouldExit = await showDialog<bool>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Dialog(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 16),
+                              const Text(
+                                '[SAM 앱 종료]',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              Image.asset(
+                                'assets/icon_popup.png',
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(height: 16),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: const TextSpan(
+                                  text: '앱을 ',
+                                  style: TextStyle(color: Colors.black, fontSize: 16),
+                                  children: [
+                                    TextSpan(
+                                      text: '종료',
+                                      style: TextStyle(
+                                        color: Color(0xFF0073FF),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '하시겠습니까?',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                        IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).pop(false),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF949494),
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(16),
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: const Text(
+                                      '취소',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).pop(true),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF0073FF),
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(16),
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: const Text(
+                                      '종료',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    // 오른쪽 상단 X 버튼
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(false),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+
+            if (shouldExit == true) {
+              SystemNavigator.pop(); // 앱 종료
+            }
+          }
+        },
+        child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // AppBar 뒤로가기 버튼 클릭 시 Login으로 이동
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const Login()),
+              );
+            },
+          ),
           title: Row(
             children: [
               Image.asset('assets/logo.png', width: 24, height: 24),
