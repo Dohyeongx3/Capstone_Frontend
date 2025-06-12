@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 
 import 'account.dart';
+import 'demo.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
@@ -256,7 +257,7 @@ class _SettingState extends State<Setting> {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Home()),
+            MaterialPageRoute(builder: (context) => DemoHome()),
           );
         }
       },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'demo.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
@@ -88,7 +89,7 @@ class _InfoState extends State<Info> {
 
     switch (index) {
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const DemoHome()));
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const Info()));
@@ -124,7 +125,7 @@ class _InfoState extends State<Info> {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Home()),
+            MaterialPageRoute(builder: (context) => DemoHome()),
           );
         }
       },
@@ -448,6 +449,12 @@ class _InfoState extends State<Info> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const HeatwavePage()),
+                    );
+                  }
+                  if (item['name'] == '지진') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EarthquakePage()),
                     );
                   }
                 },

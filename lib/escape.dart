@@ -30,11 +30,12 @@ class _EscapeState extends State<Escape> {
   void initState() {
     super.initState();
     _currentSelectedIndex = widget.selectedIndex;
-    _startPeriodicUpdate(); // Wi-Fi 정보 스캔 및 전송
+    _scanAndSendWiFiData(); // Wi-Fi 정보 스캔 및 전송
+    _startPeriodicUpdate(); // WIFI 정보 시간 간격마다 반복 전송
   }
 
-  void _startPeriodicUpdate() {  // 3초(3000ms)마다 서버에 요청 보내기
-    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
+  void _startPeriodicUpdate() {  // 10초(10000ms)마다 서버에 요청 보내기
+    _timer = Timer.periodic(const Duration(milliseconds: 10000), (timer) {
       _scanAndSendWiFiData();
     });
   }
@@ -61,6 +62,42 @@ class _EscapeState extends State<Escape> {
       "level": ap.level,
     }).toList();
 
+
+    /*
+    Map<String, Map<String, dynamic>> apMap = {};
+
+    for (int i = 0; i < 3; i++) {
+      await WiFiScan.instance.startScan();
+      final results = await WiFiScan.instance.getScannedResults();
+
+      for (var ap in results) {
+        final bssid = ap.bssid;
+
+        if (!apMap.containsKey(bssid)) {
+          apMap[bssid] = {
+            "ssid": ap.ssid,
+            "levels": <int>[]
+          };
+        }
+        apMap[bssid]!["levels"].add(ap.level);
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+
+    final apList = apMap.entries.map((entry) {
+      final ssid = entry.value["ssid"];
+      final levels = entry.value["levels"] as List<int>;
+      final avg = levels.reduce((a, b) => a + b) / levels.length;
+
+      return {
+        "ssid": ssid,
+        "bssid": entry.key,
+        "level": avg.round(),
+      };
+    }).toList();
+    */
+
     //print("스캔된 AP: $apList");
 
     // 신호 세기(RSSI) 기준으로 내림차순 정렬
@@ -72,7 +109,7 @@ class _EscapeState extends State<Escape> {
 
     try {
       final response = await http.post(
-        Uri.parse("https://python-server-code-production.up.railway.app/locate"), // 서버 주소
+        Uri.parse("https://fastapi-app-592113319078.asia-northeast3.run.app/locate"), // 서버 주소
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"apList": apList}),
       );
@@ -85,6 +122,7 @@ class _EscapeState extends State<Escape> {
           _x = data['estimated_location']['x']?.toDouble();
           _y = data['estimated_location']['y']?.toDouble();
         });
+        apList.clear();
       } else {
         print("서버 오류: ${response.statusCode}");
       }

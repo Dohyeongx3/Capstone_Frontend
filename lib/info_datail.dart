@@ -1003,6 +1003,183 @@ class _HeatwavePageState extends State<HeatwavePage> {
   }
 }
 
+class EarthquakePage extends StatefulWidget {
+  const EarthquakePage({super.key});
+
+  @override
+  State<EarthquakePage> createState() => _EarthquakePageState();
+}
+
+class _EarthquakePageState extends State<EarthquakePage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '지진 행동요령.'
+              '지진 발생 전에는 가구는 단단히 고정하고, 낙하물이 없는 안전지대를 미리 확보하세요. '
+              '대피소 위치를 파악하고, 가족 연락망을 정리하세요. '
+              '손전등, 구급약, 생수 등 비상용품을 준비하세요. '
+              '지진 발생 중에는 실내에서는 튼튼한 탁자 아래로 들어가 머리를 보호하고, 진동이 멈출 때까지 기다리세요. '
+              '실외에서는 건물, 간판, 유리창 등에서 멀리 떨어지세요. '
+              '운전 중일 경우 도로 우측에 정차하고, 라디오로 상황을 확인하세요. '
+              '엘리베이터는 절대 사용하지 마세요. '
+              '지진 발생 후에는 여진에 대비해 당분간 실내에 머물지 마세요. '
+              '가스와 전기 차단을 확인한 후 행동하세요. '
+              '구조대의 지시에 따르고, 주변 피해자를 도와주세요.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '지진 (Earthquake)',
+      mainImageAsset: 'assets/earthquake_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 가능 지역', content: '전국 (특히 활성 단층 인접 지역)'),
+        InfoRowData(title: '위험 요인', content: '건물 붕괴, 낙하물, 화재, 2차 여진'),
+        InfoRowData(title: '피해 위험', content: '인명 사고, 대피 지연, 정전·가스 누출'),
+        InfoRowData(title: '관련 기관', content: '기상청, 행정안전부, 소방청'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '지진은 지각판의 충돌이나 단층 이동으로 발생하는 진동으로, 건축물 붕괴, 화재, 낙하물 등의 피해를 유발하는 자연재난입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '주요 피해 양상',
+              items: [
+                '강한 진동 → 건물 흔들림',
+                '2차 피해: 화재, 유리 파손, 전기·가스 폭발',
+              ],
+            ),
+            SectionBlock(
+              title: '국내 지진 특징',
+              items: [
+                '최근 내륙 지진 증가 (경주, 포항 사례 등)',
+                '규모 3.0 이상 지진 연간 수십 회 발생',
+              ],
+            ),
+            SectionBlock(
+              title: '2차 재난 위험성',
+              items: [
+                '여진: 최초 지진 후 반복되는 진동으로 추가 붕괴 유발',
+                '지진해일(쓰나미): 해안 지진 시 발생 가능',
+                '심리적 공황: 대피 혼란, 사회적 불안 증가',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '건물 붕괴 및 낙하물',
+              items: [
+                '내진 설계 미비한 노후 건물 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '유리창 파손 및 날카로운 파편',
+              items: [
+                '창문 근처 피하기',
+              ],
+            ),
+            SectionBlock(
+              title: '화재 및 가스 누출',
+              items: [
+                '진동 후 전기 불꽃, 가스 누출로 2차 피해',
+              ],
+            ),
+            SectionBlock(
+              title: '통신·전기·교통 두절',
+              items: [
+                '엘리베이터 고장, 통신망 마비',
+              ],
+            ),
+            SectionBlock(
+              title: '해안가 지진 시 지진해일(쓰나미) 우려',
+              items: [
+                '바닷가 지역은 즉시 고지대로 대피',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '지진 발생 전',
+              items: [
+                '가구 고정, 낙하물 없는 안전지대 미리 확보',
+                '대피소 위치, 가족 연락망 정리',
+                '비상용품 준비: 손전등, 구급약, 생수 등',
+              ],
+            ),
+            SectionBlock(
+              title: '지진 발생 중',
+              items: [
+                '실내: 탁자 밑에서 머리 보호, 진동 멈출 때까지 기다리기',
+                '실외: 건물, 간판, 유리창에서 멀리 떨어지기',
+                '운전 중: 도로 우측 정차, 라디오로 상황 확인',
+                '엘리베이터: 절대 사용 금지',
+              ],
+            ),
+            SectionBlock(
+              title: '지진 발생 후',
+              items: [
+                '여진 대비해 당분간 실내에 머물지 않기',
+                '가스·전기 차단 확인 후 행동',
+                '구조대 지시 따르고 주변 피해자 도와주기',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/earthquake_card.png',
+          linkTitle: '[국민재난안전포털] 지진 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent09.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
 class BlazePage extends StatefulWidget {
   const BlazePage({super.key});
 

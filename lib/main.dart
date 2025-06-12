@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
+import 'demo.dart';
 import 'onboard.dart';
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 void main() async {
   await _NaverMapinitialize();     //웹에서 테스트 하고 싶으면 이부분 /*await _NaverMapinitialize();*/ 이렇게 주석처리 하고 돌리면 됩니다.
@@ -27,6 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver],
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );
@@ -47,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Onboard()),
+        MaterialPageRoute(builder: (context) => const DemoHome()),
       );
     });
   }

@@ -28,7 +28,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
       'isLeader': true,
       'status': '안전',
       'location': '위치1',
-      'relation': '관계1',
+      'phone': '010-0000-0000',
       'profileImage': 'assets/default.png', //
     },
     {
@@ -36,7 +36,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
       'isLeader': false,
       'status': '위험',
       'location': '위치2',
-      'relation': '관계2',
+      'phone': '010-1111-1111',
       'profileImage': 'assets/default.png',
     },
     {
@@ -44,7 +44,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
       'isLeader': false,
       'status': '안전',
       'location': '위치3',
-      'relation': '관계3',
+      'phone': '010-2222-2222',
       'profileImage': 'assets/default.png',
     },
   ];
@@ -106,115 +106,6 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
     }
   }
   */
-
-  Future<void> InviteCodeDialog(BuildContext context) async {
-    final TextEditingController _inviteCodeController = TextEditingController();
-
-    final result = await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icon_popup.png',
-                    width: 80,
-                    height: 80,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '[멤버 초대]',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '친구에게 받은 초대코드를 입력해주세요.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _inviteCodeController,
-                    decoration: InputDecoration(
-                      hintText: '초대 코드를 입력해주세요.',
-                      hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(_inviteCodeController.text);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0073FF),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        '입력 완료',
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              right: 8,
-              top: 8,
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.close,
-                    size: 18,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      // TODO: 초대 코드 처리 로직 추가
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('입력한 초대코드: $result')),
-      );
-    }
-  }
 
   @override
   void initState() {
@@ -351,31 +242,6 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
                 ],
               );
             }).toList(),
-
-            const SizedBox(height: 16),
-            const Text('추가', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-
-            GestureDetector(
-              onTap: () {
-                InviteCodeDialog(context);
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0073FF),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  '멤버 초대하기',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20), // 하단 버튼 공간 확보
           ],
         ),
       ),
@@ -424,7 +290,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
               const SizedBox(height: 8),
               Text('현재 위치: ${member['location']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 4),
-              Text('관계: ${member['relation']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              Text('전화번호: ${member['phone']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'demo.dart';
 import 'escape.dart';
 import 'home.dart';
 import 'info.dart';
@@ -136,7 +137,6 @@ class _GroupState extends State<Group> {
     'phone': '010-1234-5678',
     'status': 'SAFE',// 'SAFE', 'DANGER', 'CHECKING'
     'profileImage': 'assets/default.png',
-    'inviteCode': 'ABC123', // 유저 초대코드
   };
   //TODO: DB에서 그룹 내 속한 모든 상태가 DANGER인사람 모아서 호출
   final List<Map<String, String?>> dangerMembers = [
@@ -422,39 +422,10 @@ class _GroupState extends State<Group> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(color: Colors.white),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        '초대코드 | ${UserData['inviteCode']}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.copy, size: 18, color: Colors.white),
-                        onPressed: () {
-                          Clipboard.setData(
-                            ClipboardData(text: UserData['inviteCode']),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('초대코드가 복사되었습니다'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
-
+            const Divider(color: Colors.grey),
             // 아래 위험 상태 멤버 섹션
             const SizedBox(height: 32),
             const Text(
