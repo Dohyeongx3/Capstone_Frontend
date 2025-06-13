@@ -8,6 +8,7 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationState extends State<NotificationPage> {
+  //TODO:DB에서 재난 문자 API에서 받아온 데이터 연결
   final List<Map<String, dynamic>> notifications = [
     {
       'id': 1,
