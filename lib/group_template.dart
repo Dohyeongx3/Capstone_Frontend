@@ -7,115 +7,32 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class GroupPageTemplate extends StatefulWidget {
-  const GroupPageTemplate({super.key});
+  final Map<String, dynamic> groupInfo;
+  final List<Map<String, dynamic>> members;
+
+  const GroupPageTemplate({
+    Key? key,
+    required this.groupInfo,
+    required this.members,
+  }) : super(key: key);
 
   @override
   State<GroupPageTemplate> createState() => _GroupPageTemplateState();
 }
 
 class _GroupPageTemplateState extends State<GroupPageTemplate> {
-  // TODO: DB에서 해당 그룹에 해당하는 정보들 맵핑
-  final Map<String, dynamic> groupInfo = {
-    'backgroundImage': 'assets/default.png',
-    'groupNumber': '그룹번호',
-    'groupName': '그룹명',
-    'groupinviteCode': 'ABC456',
-  };
-  // TODO: DB에서 해당 그룹에 해당하는 그룹원 정보들 맵핑
-  final List<Map<String, dynamic>> members = [
-    {
-      'name': '그룹장',
-      'isLeader': true,
-      'status': '안전',
-      'location': '위치1',
-      'phone': '010-0000-0000',
-      'profileImage': 'assets/default.png', //
-    },
-    {
-      'name': '멤버1',
-      'isLeader': false,
-      'status': '위험',
-      'location': '위치2',
-      'phone': '010-1111-1111',
-      'profileImage': 'assets/default.png',
-    },
-    {
-      'name': '멤버2',
-      'isLeader': false,
-      'status': '안전',
-      'location': '위치3',
-      'phone': '010-2222-2222',
-      'profileImage': 'assets/default.png',
-    },
-  ];
-  /*
-  // TODO: DB API 수정 필요
-  Map<String, dynamic>? groupInfo;
-
-  Future<void> fetchGroupData() async {
-    final response = await http.post(
-      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonEncode({ 'globalUid': globalUid }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      setState(() {
-        groupInfo = {
-          'backgroundImage': data['backgroundImage'],
-          'groupNumber': data['groupNumber'],
-          'groupName': data['groupName'],
-          'inviteCode': data['inviteCode'],
-        };
-      });
-
-      await fetchGroupMembers(data['groupNumber']);
-
-    } else {
-      print('그룹 정보 불러오기 실패');
-    }
-  }
-
-  // TODO: DB API 수정 필요
-  List<Map<String, dynamic>> members = [];
-
-  Future<void> fetchGroupMembers(String groupId) async {
-    final response = await http.post(
-      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/members'),
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonEncode({ 'groupId': groupId }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['members'];
-
-      setState(() {
-        members = List<Map<String, dynamic>>.from(data.map((member) => {
-          'name': member['name'],
-          'isLeader': member['isLeader'],
-          'status': member['status'],
-          'location': member['location'],
-          'relation': member['relation'],
-          'profileImage': member['profileImage'],
-        }));
-      });
-    } else {
-      print('멤버 불러오기 실패');
-    }
-  }
-  */
-
   @override
   void initState() {
     super.initState();
-    //fetchGroupData(); // 최초 실행 시 서버에서 데이터 받아오기
   }
 
 
   @override
   Widget build(BuildContext context) {
+    final groupInfo = widget.groupInfo;
+    final members = widget.members;
+    final String? currentUserUid = globalUid;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -157,14 +74,10 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                /*
                 image: DecorationImage(
-                  image: AssetImage(groupInfo['backgroundImage']),
+                  image: AssetImage('assets/group_default.png'),
                   fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.6), BlendMode.darken),
                 ),
-                */
-                color: Colors.black,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -227,7 +140,11 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
 
             const Text('그룹장', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            _buildMemberInfo(members.firstWhere((m) => m['isLeader'] == true)),
+            _buildMemberInfo(
+              members.firstWhere((m) => m['isLeader'] == true),
+              isCurrentUser: members.firstWhere((m) => m['isLeader'] == true)['uid'] == globalUid,
+              isCurrentUserLeader: members.any((m) => m['uid'] == globalUid && m['isLeader'] == true),
+            ),
 
             const SizedBox(height: 32),
             const Text('멤버', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
@@ -237,7 +154,11 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
             ...members.where((m) => m['isLeader'] != true).map((member) {
               return Column(
                 children: [
-                  _buildMemberInfo(member),
+                  _buildMemberInfo(
+                    member,
+                    isCurrentUser: member['uid'] == globalUid,
+                    isCurrentUserLeader: members.any((m) => m['uid'] == globalUid && m['isLeader'] == true),
+                  ),
                   const Divider(color: Colors.grey, height: 50),
                 ],
               );
@@ -248,7 +169,14 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
     );
   }
 
-  Widget _buildMemberInfo(Map<String, dynamic> member) {
+  Widget _buildMemberInfo(
+      Map<String, dynamic> member, {
+        required bool isCurrentUser,
+        required bool isCurrentUserLeader,
+      }) {
+    final bool showKickButton = isCurrentUserLeader && !isCurrentUser;
+    final bool showLeaveButton = !isCurrentUserLeader && isCurrentUser;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -259,7 +187,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
           children: [
             CircleAvatar(
               radius: 45,
-              backgroundImage: AssetImage(member['profileImage'] ?? 'assets/default_profile.png'),
+              backgroundImage: AssetImage('assets/default_profile.png'),
               backgroundColor: Colors.grey,
             ),
             Positioned(
@@ -279,6 +207,8 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
           ],
         ),
         const SizedBox(width: 20),
+
+        // 이름, 위치, 전화번호
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,6 +224,32 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
             ],
           ),
         ),
+
+        // 내보내기 또는 나가기 버튼 (globalUid가 null이 아니고 조건에 맞을 때만)
+        if (globalUid != null && (showKickButton || showLeaveButton))
+          GestureDetector(
+            onTap: () {
+              if (showKickButton) {
+                // TODO: 클라이언트가 groupInfo의 groupinvitecode와 해당 멤버의 이름을 보내면 서버에서 해당 멤버 그룹에서 삭제
+                print('${member['name']} 내보내기');
+              } else if (showLeaveButton) {
+                // TODO: 클라이언트가 groupInfo의 groupinvitecode과 사용자의 이름을 보내면 서버에서 내 정보를 멤버 그룹에서 삭제
+                print('${member['name']} 나가기');
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.only(left: 8, top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF676767),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                showKickButton ? '내보내기' : '나가기',
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
       ],
     );
   }

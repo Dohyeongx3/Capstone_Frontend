@@ -39,7 +39,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
       return;
     }
 
-    // TODO: 비밀번호 변경 로직 구현
+    // TODO: 클라이언트가 입력한 newPw 변수를 이미 DB에 들어있던 password 정보와 교체
 
     _showDialog("비밀번호가 성공적으로 변경되었습니다.");
   }
@@ -262,7 +262,6 @@ class _AccountDeletePageState extends State<AccountDeletePage> {
                         Expanded(
                           child: InkWell(
                             onTap: () {
-                              // TODO: 회원 탈퇴 처리 로직 구현
                               Navigator.of(context).pop(true);
                             },
                             child: Container(
@@ -312,7 +311,7 @@ class _AccountDeletePageState extends State<AccountDeletePage> {
       );
 
       if (shouldDelete == true) {
-        // TODO: 실제 회원 탈퇴 처리 및 후속 동작 구현
+        // TODO: 클라이언트가 globalUid 정보 보내면 서버에서 해당 사용자에 대한 정보 모두 삭제
       }
     }
 

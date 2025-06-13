@@ -19,7 +19,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   int _selectedIndex = 4; // 설정 화면에서 진입했기 때문에 기본 인덱스는 4
 
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
     'year': 2000,
@@ -27,7 +27,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'day': 11,
     'phone': '010-1234-5678',
     'status': 'SAFE',
-    'profileImage': 'assets/default.png',
   };
 
   // TextEditingController 선언
@@ -36,19 +35,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _monthController;
   late TextEditingController _dayController;
   late TextEditingController _phoneController;
-
-  File? _selectedImage;
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -167,25 +153,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!)
-                      : const AssetImage('assets/default.png') as ImageProvider,
+                  backgroundImage: AssetImage('assets/default_profile.png'),
                   backgroundColor: Colors.grey[200],
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: -4,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0073FF),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                      onPressed: _pickImage,
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -296,8 +265,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 }
 
 
-                // TODO:수정하기 버튼 누르면 위 수정사항 리스트와 DB에 반영
-                // TODO:이 버튼 누르면 이미지도 유저 프로필 전체에 반영되도록 수정
+                // TODO: 사용자 globalUid 를 보내면 위의 컨트롤러들에 해당하는 값으로 서버에서 변경
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0073FF),

@@ -293,7 +293,7 @@ class _IDPWfindState extends State<IDPWfind> {
       return;
     }
 
-    // TODO: 실제 비밀번호 변경 처리
+    // TODO: 클라이언트가 입력한 newPw 변수를 서버에서 해당 사용자의 입력한 비밀번호 변경
     _showDialog("비밀번호가 성공적으로 변경되었습니다.");
   }
 

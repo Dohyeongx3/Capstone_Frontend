@@ -24,9 +24,8 @@ class _SettingState extends State<Setting> {
 
   bool isLocationEnabled = true;
   bool isNotificationEnabled = false;
-  bool isTTSEnabled = false;
 
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
     'year': 2000,
@@ -34,7 +33,6 @@ class _SettingState extends State<Setting> {
     'day': 11,
     'phone': '010-1234-5678',
     'status': 'SAFE',
-    'profileImage': 'assets/default.png',
   };
 
   @override
@@ -158,7 +156,6 @@ class _SettingState extends State<Setting> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            // TODO: 로그아웃 처리 로직 구현
                             Navigator.of(context).pop(true);
                           },
                           child: Container(
@@ -208,7 +205,7 @@ class _SettingState extends State<Setting> {
     );
 
     if (shouldLogout == true) {
-      // TODO: 실제 로그아웃 처리 및 화면 이동 구현
+      // TODO: 클라에서 globalUid 보내면 사용자의 로그인 해제
     }
   }
 
@@ -305,7 +302,6 @@ class _SettingState extends State<Setting> {
 
     final String name = user['name'];
     final String phone = user['phone'];
-    final String profileImage = user['profileImage'] ?? 'assets/default_profile.png';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -334,7 +330,7 @@ class _SettingState extends State<Setting> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage(profileImage),
+                  backgroundImage: AssetImage('assets/default_profile.png'),
                 ),
                 const SizedBox(width: 16),
                 Column(
@@ -390,52 +386,6 @@ class _SettingState extends State<Setting> {
           const Divider(color: Colors.grey, thickness: 0.5),
           const SizedBox(height: 16),
 
-          // 데이터 관리
-          const Text(
-            '데이터 관리',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 12),
-          InkWell(
-            onTap: () {},
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        '나의 대피 이력',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '완료된 대피 경로 및 세부 이력 확인',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Divider(color: Colors.grey, thickness: 0.5),
-          const SizedBox(height: 16),
-
           // 서비스 섹션
           const Text(
             '서비스',
@@ -464,18 +414,6 @@ class _SettingState extends State<Setting> {
             value: isNotificationEnabled,
             onChanged: (value) {
               isNotificationEnabled = value;
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          // TTS 안내
-          _buildToggleSetting(
-            title: 'TTS 안내 활성화',
-            subtitle: '재난 상황에서 음성으로 안내를 제공합니다.',
-            value: isTTSEnabled,
-            onChanged: (value) {
-              isTTSEnabled = value;
             },
           ),
 

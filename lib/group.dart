@@ -58,6 +58,7 @@ class _GroupState extends State<Group> {
         break;
     }
   }
+
   /*
   // TODO: 사용자 프로필 호출 테스트, DB API 수정 필요
   Map<String, dynamic>? UserData;
@@ -78,86 +79,67 @@ class _GroupState extends State<Group> {
       print('사용자 정보 불러오기 실패');
     }
   }
-
-
-  //TODO: 위험 멤버 호출 테스트, DB API 수정 필요
-  List<Map<String, String?>> dangerMembers = [];
-
-  Future<void> fetchDangerMembers() async {
-    final response = await http.post(
-      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/danger'),
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonEncode({ 'globalUid': globalUid }),
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body)['data'];
-      setState(() {
-        dangerMembers = data.map<Map<String, String?>>((member) => {
-          'name': member['name'],
-          'image': member['image'],
-        }).toList();
-      });
-    } else {
-      print('위험 멤버 불러오기 실패');
-    }
-  }
-
-
-  //TODO: 그룹 호출 테스트, DB API 수정 필요
-  List<Map<String, dynamic>> groups = [];
-
-  Future<void> fetchGroups() async {
-    final response = await http.post(
-      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonEncode({ 'globalUid': globalUid }),
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body)['data'];
-      setState(() {
-        groups = data.map<Map<String, dynamic>>((group) => {
-          'name': group['name'],
-          'members': group['members'],
-          'backgroundimage': group['backgroundimage'],
-        }).toList();
-      });
-    } else {
-      print('그룹 목록 불러오기 실패');
-    }
-  }
   */
-  //TODO: DB에서 로그인된 사용자 정보 맵핑해서 리스트에서 연결(setting.dart,editprofile.dart,group.dart 공통)
+  //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
     'year': 2000,
     'month': 11,
     'day': 11,
     'phone': '010-1234-5678',
-    'status': 'SAFE',// 'SAFE', 'DANGER', 'CHECKING'
-    'profileImage': 'assets/default.png',
+    'status': 'SAFE',
   };
-  //TODO: DB에서 그룹 내 속한 모든 상태가 DANGER인사람 모아서 호출
-  final List<Map<String, String?>> dangerMembers = [
-    {
-      'name': '홍길동',
-      'image': 'assets/default_profile.png',
-    },
-    {
-      'name': '김길동',
-      'image': 'assets/default_profile.png',
-    },
-    {
-      'name': null, // 이름 없음
-      'image': null, // 이미지 없음
-    },
-  ];
-  //TODO: DB에서 사용자가 속한 모든 그룹 호출
+  //TODO: 클라에서 globalUid를 보내면 globalUid에 맞는 유저가 속한 그룹과 그 그룹에 관한 정보(그룹번호,그룹명,그룹초대코드)와 멤버에 관한 정보(멤버에 대한 globalUid,멤버이름,그룹장여부,상태,위치,전화번호) 싹 불러오기
   final List<Map<String, dynamic>> groups = [
-    {'name': '그룹1', 'members': 4 ,'backgroundimage': 'assets/default_profile.png'},
-    {'name': '그룹2', 'members': 6 ,'backgroundimage': 'assets/default_profile.png'},
+    {
+      'groupNumber': '001',
+      'groupName': '그룹A',
+      'groupinviteCode': 'ABC123',
+      'members': [
+        {
+          'uid': 'user001',
+          'name': '그룹장',
+          'isLeader': true,
+          'status': '안전',
+          'location': '위치1',
+          'phone': '010-0000-0000',
+        },
+        {
+          'uid': 'user002',
+          'name': '멤버1',
+          'isLeader': false,
+          'status': '위험',
+          'location': '위치2',
+          'phone': '010-1111-1111',
+        },
+      ],
+    },
+    {
+      'groupNumber': '002',
+      'groupName': '그룹B',
+      'groupinviteCode': 'DEF456',
+      'members': [
+        {
+          'uid': 'user003',
+          'name': '다른장',
+          'isLeader': true,
+          'status': '위험',
+          'location': '위치X',
+          'phone': '010-3333-3333',
+        },
+        {
+          'uid': 'user004',
+          'name': '다른멤버',
+          'isLeader': false,
+          'status': '안전',
+          'location': '위치Y',
+          'phone': '010-4444-4444',
+        },
+      ],
+    },
   ];
+  late List<Map<String, String?>> dangerMembers;
+
 
   Future<void> GroupInviteCodeDialog(BuildContext context) async {
     final TextEditingController _inviteCodeController = TextEditingController();
@@ -261,11 +243,22 @@ class _GroupState extends State<Group> {
     );
 
     if (result != null && result.isNotEmpty) {
-      // TODO: 그룹 코드 처리 로직 추가
+      // TODO: 사용자가 입력한 초대코드가 위의 final result 변수에 저장되는데 서버에서 이에 맞는 그룹의 그룹장에게 초대 알림 전송
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('입력한 그룹코드: $result')),
       );
     }
+  }
+
+  void initState() {
+    super.initState();
+    dangerMembers = groups
+        .expand((group) => group['members'] as List<dynamic>)
+        .where((member) => member['status'] == '위험')
+        .map<Map<String, String?>>((member) => {
+      'name': member['name'] as String,
+    })
+        .toList();
   }
 
   @override
@@ -418,7 +411,7 @@ class _GroupState extends State<Group> {
                       // 오른쪽: 프로필 이미지
                       CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage(user['profileImage'] ?? 'assets/default_profile.png'),
+                        backgroundImage: AssetImage('assets/default_profile.png'),
                       ),
                     ],
                   ),
@@ -440,9 +433,9 @@ class _GroupState extends State<Group> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: dangerMembers.map((member) {
+                children: dangerMembers.isNotEmpty
+                    ? dangerMembers.map((member) {
                   final String? name = member['name'];
-                  final String? image = member['image'];
                   final bool isMissing = name == null;
 
                   return Padding(
@@ -451,19 +444,14 @@ class _GroupState extends State<Group> {
                       alignment: Alignment.bottomCenter,
                       clipBehavior: Clip.none,
                       children: [
-                        // 아바타
+                        // 아바타 (항상 기본 이미지 사용)
                         CircleAvatar(
                           radius: 45,
-                          backgroundColor: image != null ? Colors.transparent : Colors.grey,
-                          backgroundImage: image != null ? AssetImage(image) : null,
-                          child: image == null
-                              ? const Icon(Icons.close, color: Colors.white)
-                              : null,
+                          backgroundImage: AssetImage('assets/default_profile.png'),
                         ),
-
                         // 이름 태그
                         Positioned(
-                          bottom: -10, // 아바타 아래로 겹치게 위치 조정
+                          bottom: -10,
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
@@ -482,7 +470,42 @@ class _GroupState extends State<Group> {
                       ],
                     ),
                   );
-                }).toList(),
+                }).toList()
+                    : [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 기본 아이콘 CircleAvatar
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: const Color(0xFF676767),
+                          child: const Icon(Icons.close, color: Colors.white, size: 32),
+                        ),
+                        // "없음" 태그
+                        Positioned(
+                          bottom: -10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF676767),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              '없음',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -505,10 +528,7 @@ class _GroupState extends State<Group> {
                   // 추가 버튼 카드
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const GroupPageTemplate()),
-                      );
+                      //TODO:그룹 생성 팝업
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.4,
@@ -552,32 +572,46 @@ class _GroupState extends State<Group> {
 
                   // 그룹 카드들
                   ...groups.map((group) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F0FF),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blueAccent),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            group['name'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                    return GestureDetector(
+                      onTap: () {
+                        // 카드 클릭 시 GroupPageTemplate 페이지로 이동 + 데이터 전달
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => GroupPageTemplate(
+                              groupInfo: group,
+                              members: List<Map<String, dynamic>>.from(group['members']),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${group['members']}명 참여 중',
-                            style: const TextStyle(fontSize: 12, color: Colors.black54),
-                          ),
-                        ],
+                        );
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F0FF),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.blueAccent),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              group['groupName'],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${(group['members'] as List).length}명 참여 중',
+                              style: const TextStyle(fontSize: 12, color: Colors.black54),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),

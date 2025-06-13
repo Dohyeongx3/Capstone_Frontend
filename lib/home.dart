@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
   String _currentLocation = '위치 확인 중...';
   String _currentAddress = '주소 확인 중...';
 
-  // TODO:DB에서 현재 로그인된 사용자 위험 상태 연결
+  // TODO: 사용자의 globalUid 보내면 해당 사용자의 위험상태를 서버에서 불러오기
   final List<Map<String, dynamic>> userStatusList = [
     {
       'status': 'SAFE', // 혹은 'DANGER', 'CHECKING'

@@ -34,8 +34,8 @@ class _EscapeState extends State<Escape> {
     _startPeriodicUpdate(); // WIFI 정보 시간 간격마다 반복 전송
   }
 
-  void _startPeriodicUpdate() {  // 10초(10000ms)마다 서버에 요청 보내기
-    _timer = Timer.periodic(const Duration(milliseconds: 10000), (timer) {
+  void _startPeriodicUpdate() {  // 3초(10000ms)마다 서버에 요청 보내기
+    _timer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
       _scanAndSendWiFiData();
     });
   }
@@ -337,6 +337,7 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
       canvas.drawLine(Offset(x1, y1), Offset(x2, y2), paint);  // 경로 그리기
     }
 
+    /*
     if (userX != null && userY != null) {
       final userPaint = Paint()
         ..color = Colors.green
@@ -345,6 +346,7 @@ class PathPainter extends CustomPainter {  // 경로 그리기 클래스
       final uy = toFlutterY(userY!);
       canvas.drawCircle(Offset(ux, uy), 4.0, userPaint);  //사용자 위치 표시
     }
+    */
   }
 
   @override

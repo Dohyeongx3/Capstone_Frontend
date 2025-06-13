@@ -89,7 +89,7 @@ class _InfoState extends State<Info> {
 
     switch (index) {
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const DemoHome()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(builder: (context) => const Info()));
@@ -125,7 +125,7 @@ class _InfoState extends State<Info> {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DemoHome()),
+            MaterialPageRoute(builder: (context) => Home()),
           );
         }
       },
