@@ -140,6 +140,270 @@ class _GroupState extends State<Group> {
   ];
   late List<Map<String, String?>> dangerMembers;
 
+  Future<void> showCreateGroupDialog(BuildContext context) async {
+    final TextEditingController _groupNameController = TextEditingController();
+
+    final groupName = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icon_popup.png',
+                    width: 80,
+                    height: 80,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '[새 그룹 만들기]',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '새로 만들 그룹의 ',
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: '이름',
+                          style: TextStyle(color: Color(0xFF0073FF), fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: '을 입력해 주세요.',
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _groupNameController,
+                    decoration: InputDecoration(
+                      hintText: '예: 지진 대응 A조, 친구 모임, 우리반 대피팀 등',
+                      hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.grey),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(_groupNameController.text);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0073FF),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            '다음',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (groupName != null && groupName.isNotEmpty) {
+      // TODO: 클라이언트에서 globalUid와 위에 입력한 groupName 변수를 보내면 서버에서 해당 글로벌uid를 가진 유저가 그룹장이고 위 입력한 그룹이름의 그룹이 위 groups 리스트에 추가되고 해당 초대 코드를 밑에 invitecode 변수로 불러올수 있게 설정
+      const String inviteCode = "ABCDEF"; // 예시 - 서버에서 받아온 코드
+      await showGroupCreatedDialog(context, inviteCode);
+    }
+  }
+
+  Future<void> showGroupCreatedDialog(BuildContext context, String inviteCode) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '[그룹 생성 완료]',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: const TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '아래의 초대코드를 친구에게 보내면 함께 ',
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: '그룹에 참여',
+                          style: TextStyle(color: Color(0xFF0073FF), fontSize: 16),
+                        ),
+                        TextSpan(
+                          text: '할 수 있어요.',
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFF0073FF)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          '초대코드 | ',
+                          style: TextStyle(color: Colors.black, fontSize: 14),
+                        ),
+                        Expanded(
+                          child: Text(
+                            inviteCode,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.copy, size: 18),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: inviteCode));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('초대코드가 복사되었습니다')),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0073FF),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        '완료',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> GroupInviteCodeDialog(BuildContext context) async {
     final TextEditingController _inviteCodeController = TextEditingController();
@@ -528,7 +792,7 @@ class _GroupState extends State<Group> {
                   // 추가 버튼 카드
                   GestureDetector(
                     onTap: () {
-                      //TODO:그룹 생성 팝업
+                      showCreateGroupDialog(context);
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.4,
