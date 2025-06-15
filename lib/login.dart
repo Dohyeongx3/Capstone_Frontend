@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'onboard.dart';
 import 'IDPWfind.dart';
 import 'home.dart';
+import 'globals.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -48,20 +49,7 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success']) {
-          final customToken = data['customToken'];
-
-          try {
-            // Firebase에 로그인 시도
-            await FirebaseAuth.instance.signInWithCustomToken(customToken);
-
-            // 로그인 성공 시 홈 화면으로 이동
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Home()),
-            );
-          } catch (firebaseError) {
-            _showErrorDialog('Firebase 로그인 실패: $firebaseError');
-          }
+          globalUid = data['uid'];
         } else {
           _showErrorDialog(data['message'] ?? '로그인 실패');
         }
