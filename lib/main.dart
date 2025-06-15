@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'demo.dart';
 import 'globals.dart';
@@ -12,6 +13,8 @@ final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<v
 
 void main() async {
   await _NaverMapinitialize();     //웹에서 테스트 하고 싶으면 이부분 /*await _NaverMapinitialize();*/ 이렇게 주석처리 하고 돌리면 됩니다.
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  globalUid = prefs.getString('uid');  // null일 수도 있음
   runApp(MyApp());
 }
 

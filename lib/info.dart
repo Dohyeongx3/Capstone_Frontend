@@ -457,6 +457,42 @@ class _InfoState extends State<Info> {
                       MaterialPageRoute(builder: (context) => const EarthquakePage()),
                     );
                   }
+                  if (item['name'] == '지진해일') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EarthquaketsunamiPage()),
+                    );
+                  }
+                  if (item['name'] == '산사태') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LandslidePage()),
+                    );
+                  }
+                  if (item['name'] == '해일') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TsunamiPage()),
+                    );
+                  }
+                  if (item['name'] == '조수(조석)') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TidePage()),
+                    );
+                  }
+                  if (item['name'] == '침수') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FloodingPage()),
+                    );
+                  }
+                  if (item['name'] == '우주전파재난') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SpacePage()),
+                    );
+                  }
                 },
                 child: Container(
                   height: 80,
@@ -600,26 +636,59 @@ class _InfoState extends State<Info> {
               return const SizedBox.shrink(); // 빈 칸 처리
             }
 
-            return SizedBox(
-              height: 80,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage: AssetImage(item['image']),
-                      backgroundColor: Colors.grey[200],
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  if (item['name'] == '승강기 안전사고') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ElevatorPage()),
+                    );
+                  }
+                  if (item['name'] == '응급처치') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FirstaidPage()),
+                    );
+                  }
+                  if (item['name'] == '심폐소생술') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CPRPage()),
+                    );
+                  }
+                  if (item['name'] == '산행안전사고') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Hikingpage()),
+                    );
+                  }
+                },
+                child: SizedBox(
+                  height: 80,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: item['image'] != ''
+                              ? AssetImage(item['image']) as ImageProvider
+                              : null,
+                          backgroundColor: Colors.grey[200],
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          item['name'],
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      item['name'],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'account.dart';
 import 'demo.dart';
 import 'escape.dart';
+import 'globals.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
+import 'main.dart';
 import 'notification.dart';
 import 'terms.dart';
 import 'editprofile.dart';
@@ -205,7 +208,31 @@ class _SettingState extends State<Setting> {
     );
 
     if (shouldLogout == true) {
-      // TODO: 클라에서 globalUid 보내면 사용자의 로그인 해제
+      // 1. 로그아웃 처리
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('uid');
+      globalUid = null;
+
+      // 2. 로그아웃 완료 팝업
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('알림'),
+          content: const Text('로그아웃 되었습니다.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('확인'),
+            ),
+          ],
+        ),
+      );
+
+      // 3. SplashScreen으로 이동
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
+            (route) => false,
+      );
     }
   }
 

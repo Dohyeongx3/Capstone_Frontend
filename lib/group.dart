@@ -59,7 +59,7 @@ class _GroupState extends State<Group> {
     }
   }
 
-  /*
+
   // TODO: 사용자 프로필 호출 테스트, DB API 수정 필요
   Map<String, dynamic>? UserData;
 
@@ -79,7 +79,7 @@ class _GroupState extends State<Group> {
       print('사용자 정보 불러오기 실패');
     }
   }
-  */
+  /*
   //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
@@ -89,6 +89,7 @@ class _GroupState extends State<Group> {
     'phone': '010-1234-5678',
     'status': 'SAFE',
   };
+  */
   //TODO: 클라에서 globalUid를 보내면 globalUid에 맞는 유저가 속한 그룹과 그 그룹에 관한 정보(그룹번호,그룹명,그룹초대코드)와 멤버에 관한 정보(멤버에 대한 globalUid,멤버이름,그룹장여부,상태,위치,전화번호) 싹 불러오기
   final List<Map<String, dynamic>> groups = [
     {
@@ -274,8 +275,16 @@ class _GroupState extends State<Group> {
 
     if (groupName != null && groupName.isNotEmpty) {
       // TODO: 클라이언트에서 globalUid와 위에 입력한 groupName 변수를 보내면 서버에서 해당 글로벌uid를 가진 유저가 그룹장이고 위 입력한 그룹이름의 그룹이 위 groups 리스트에 추가되고 해당 초대 코드를 밑에 invitecode 변수로 불러올수 있게 설정
-      const String inviteCode = "ABCDEF"; // 예시 - 서버에서 받아온 코드
+      const String inviteCode = "ABCDEF"; // 예시
       await showGroupCreatedDialog(context, inviteCode);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('그룹 이름을 입력해주세요.'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -590,7 +599,7 @@ class _GroupState extends State<Group> {
     Color statusColor;
     String statusText;
 
-    switch (user['status']) {
+    switch (user?['status']) {
       case 'SAFE':
         statusColor = const Color(0xFF00BB6D);
         statusText = '안전';
@@ -654,7 +663,7 @@ class _GroupState extends State<Group> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              user['name'],
+                              user?['name'] ?? '이름 없음',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -663,7 +672,7 @@ class _GroupState extends State<Group> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              user['phone'],
+                              user?['phone'] ?? '전화번호 없음',
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12,

@@ -1180,6 +1180,913 @@ class _EarthquakePageState extends State<EarthquakePage> {
   }
 }
 
+class EarthquaketsunamiPage extends StatefulWidget {
+  const EarthquaketsunamiPage({super.key});
+
+  @override
+  State<EarthquaketsunamiPage> createState() => _EarthquaketsunamiPageState();
+}
+
+class _EarthquaketsunamiPageState extends State<EarthquaketsunamiPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '지진해일 발생 시 행동요령. '
+              '경보가 발생하면 즉시 고지대로 대피하세요. 해안선에서 최소 1에서 2킬로미터 이상 떨어진 곳으로 이동해야 합니다. '
+              '절대 바다 방향으로 이동하거나, 해일을 직접 확인하러 가지 마세요. '
+              '해안 산책로, 방파제, 부두 등 위험 지역에서는 즉시 벗어나야 합니다. '
+              '해일이 도달하는 중에는, 불가피한 경우 높은 건물의 3층 이상으로 이동하세요. '
+              '차량보다는 도보로 이동하는 것이 빠르고 안전합니다. '
+              '가족이나 이웃에게 대피를 유도한 뒤, 자신의 안전을 먼저 확보하세요. '
+              '해일 이후에는 당국의 안전 안내가 있기 전까지 해안에 접근하지 마세요. '
+              '2차 해일에 대비하여 안전 지역에서 대기하세요. '
+              '감전 위험이 있는 장소나 파손된 구조물에는 접근하지 마세요.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '지진해일 (Tsunami)',
+      mainImageAsset: 'assets/earthquaketsunami_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 가능 지역', content: '해안 인근 지역'),
+        InfoRowData(title: '경보 기준', content: '인근 해역에서 규모 6.0 이상 해저지진 발생'),
+        InfoRowData(title: '피해 위험', content: '고속 해일로 인한 해안 침수, 인명 피해'),
+        InfoRowData(title: '관련 기관', content: '기상청, 해양수산부, 행정안전부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '지진해일은 해저 지진이나 해저 산사태 등으로 인해 바닷물이 높은 파도로 해안으로 밀려드는 현상입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '특징',
+              items: [
+                '보이지 않는 속도로 빠르게 접근',
+                '2차, 3차 해일이 반복적으로 도달 가능',
+                '해안 가까운 지역일수록 피할 시간이 짧음',
+              ],
+            ),
+            SectionBlock(
+              title: '국내 주요 사례',
+              items: [
+                '1983년 일본 니가타 앞바다 지진 시, 동해안 일부 피해 발생',
+                '한반도 인근 해역 지진 시 해일 발생 가능성 있음',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '고속 해일',
+              items: [
+                '최대 시속 수백 km, 물러난 바닷물 뒤 강한 파도 도달',
+              ],
+            ),
+            SectionBlock(
+              title: '해안 침수 및 건물 파괴',
+              items: [
+                '저지대·항구·해수욕장 등 침수 가능성 큼',
+              ],
+            ),
+            SectionBlock(
+              title: '대피 지연',
+              items: [
+                '경보 후 수 분 내 도달 → 신속한 대피 필수',
+              ],
+            ),
+            SectionBlock(
+              title: '2차, 3차 해일',
+              items: [
+                '초기 해일 후 반복 파도 도달로 구조 중 사고 위험',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '경보 발생 시',
+              items: [
+                '즉시 고지대로 대피 (해안선 기준 1~2km 이상 떨어지기)',
+                '절대 바다 방향으로 이동하거나 확인하러 가지 말 것',
+                '해안 산책로·방파제·부두 등 즉시 벗어나기',
+              ],
+            ),
+            SectionBlock(
+              title: '해일 도달 중',
+              items: [
+                '높은 건물의 3층 이상으로 이동 (불가피할 때)',
+                '차량보다는 도보 이동이 빠르고 안전',
+                '가족·이웃에게 대피 유도 후 개인 안전 우선 확보',
+              ],
+            ),
+            SectionBlock(
+              title: '해일 이후',
+              items: [
+                '당국의 안전 안내 전까지 해안 접근 금지',
+                '2차 해일 대비 → 안전지역 대기',
+                '감전, 파손 구조물 접근 금지',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/tsunami_card.png',
+          linkTitle: '[국민재난안전포털] 지진해일 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent10.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class LandslidePage extends StatefulWidget {
+  const LandslidePage({super.key});
+
+  @override
+  State<LandslidePage> createState() => _LandslidePageState();
+}
+
+class _LandslidePageState extends State<LandslidePage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '산사태 발생 시 행동요령. '
+              '산사태 예보가 있을 경우, 산사태 우려 지역에 거주하는 주민은 즉시 안전지대로 이동해야 합니다. '
+              '산 중턱 이상의 주거지에 거주하는 경우에는 일시 대피를 준비하세요. '
+              '빗물 유입 통로를 정비하고, 배수로를 점검하여 산사태를 예방합니다. '
+              '산사태 발생 징후가 감지되면 즉시 대피해야 합니다. '
+              '지반에서 이상한 소리가 나거나 나무가 흔들릴 경우, 산 아래로부터 멀리 떨어진 안전한 곳으로 대피하세요. '
+              '사면에 균열이 생기거나 토사가 유입되는 것이 보이면, 즉시 신고하고 안전한 곳으로 이동해야 합니다. '
+              '산사태 발생 후에는 2차 붕괴의 위험이 있으므로 현장에 접근하지 마세요. '
+              '복구 작업은 반드시 지자체나 소방 당국의 지시에 따라 협조해야 합니다. '
+              '통신, 전기, 가스 등 위험 요소가 있는 시설에는 절대 접근하지 마세요.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '산사태 (Landslide)',
+      mainImageAsset: 'assets/landslide_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 가능 지역', content: '06월 - 09월 집중호우 시기  '),
+        InfoRowData(title: '경보 기준', content: '시간당 30mm 이상 강우 시, 산사태 우려 지역'),
+        InfoRowData(title: '피해 위험', content: '주택·도로 매몰, 인명 피해, 2차 붕괴'),
+        InfoRowData(title: '관련 기관', content: '산림청, 행정안전부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '산사태는 집중호우나 지진, 인위적 개발로 인해 산비탈 또는 토사가 한꺼번에 아래로 무너져 내리는 현상입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '주요 발생 조건',
+              items: [
+                '집중호우, 장마철 지속 강우',
+                '무분별한 산지 개발',
+                '벌채, 사면 붕괴 등 지반 약화',
+              ],
+            ),
+            SectionBlock(
+              title: '특징',
+              items: [
+                '발생 전 전조현상 있음 (나무 흔들림, 지반 갈라짐 등)',
+                '발생 속도가 빨라 즉각적인 대피 필요',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '주택·도로 매몰',
+              items: [
+                '산지 인접 주거지, 도로, 농경지 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '집중호우로 인한 지반 붕괴',
+              items: [
+                '시간당 30mm 이상 강우 시 주의 필요',
+              ],
+            ),
+            SectionBlock(
+              title: '사면 붕괴 전조',
+              items: [
+                '나무 기울어짐, 땅 울림, 물 흐름 증가 등',
+              ],
+            ),
+            SectionBlock(
+              title: '2차 붕괴',
+              items: [
+                '1차 이후 잔여 토사 붕괴 위험',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '산사태 예보 시',
+              items: [
+                '산사태 우려 지역 주민은 즉시 안전지대로 이동',
+                '산 중턱 이상의 주거지는 일시 대피 준비',
+                '빗물 유입 통로 정비, 배수로 점검',
+              ],
+            ),
+            SectionBlock(
+              title: '발생 징후 감지 시',
+              items: [
+                '지반에서 이상 소리가 나거나 나무가 흔들리면 즉시 산 아래로부터 멀리 대피',
+                '사면 균열, 토사 유입 등 감지 시 신고 후 즉시 이동',
+              ],
+            ),
+            SectionBlock(
+              title: '발생 후',
+              items: [
+                '2차 붕괴 가능성 있으므로 현장 접근 금지',
+                '지자체 또는 소방 당국 지시에 따라 복구 협조',
+                '통신·전기·가스 등 위험 요소 접근 금지',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/landslide_card.png',
+          linkTitle: '[국민재난안전포털] 산사태 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent20.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class TsunamiPage extends StatefulWidget {
+  const TsunamiPage({super.key});
+
+  @override
+  State<TsunamiPage> createState() => _TsunamiPageState();
+}
+
+class _TsunamiPageState extends State<TsunamiPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '해일 발생 시 행동요령. '
+              '먼저, 경보를 수신한 경우에는 해안에서 즉시 고지대로 대피하고, 해발 10미터 이상 지역으로 이동하는 것이 좋습니다. '
+              '바닷가나 방파제 등지에는 접근을 즉시 중단해야 하며, 가까운 구조물에 올라가는 대신 충분한 거리를 확보해야 합니다. '
+              '해일이 도달할 때에는 고층 건물의 높은 층으로 이동해야 하며, 이동이 불가능한 경우 안전한 장소에서 대기합니다. '
+              '구조 요청은 전화보다는 문자 메시지나 재난 안전 앱을 사용하는 것이 더 효율적입니다. '
+              '해일 이후에는 2차 해일 가능성에 대비하여 구조가 완료되기 전까지는 절대 원래 위치로 복귀하지 마세요. '
+              '침수된 지역에서는 감전 사고가 발생할 수 있으므로 전기 차단을 요청하고, 전기 설비 주변에는 접근하지 않아야 합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '해일 (Tidal Wave)',
+      mainImageAsset: 'assets/tsunami_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 원인', content: '지진, 화산, 해저 산사태 등으로 인한 해수 급변'),
+        InfoRowData(title: '피해 지역', content: '해안 지역, 항구, 저지대 마을'),
+        InfoRowData(title: '피해 위험', content: '해안 침수, 구조물 파손, 인명 피해'),
+        InfoRowData(title: '관련 기관', content: '기상청, 해양수산부, 행정안전부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '해일은 지진, 해저 산사태, 화산 폭발 등 지형적 요인으로 갑자기 해수가 이동하면서 발생하는 거대한 파도입니다. 일반적인 조석(밀물·썰물)과는 구분되는 재해성 자연 현상입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '구분',
+              items: [
+                '지진해일(Tsunami): 해저 지진으로 발생',
+                '폭풍해일(Storm Surge): 태풍과 저기압이 원인',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '급격한 해수 상승 및 침수',
+              items: [
+                '해안 마을, 부두, 저지대 침수 피해 발생',
+              ],
+            ),
+            SectionBlock(
+              title: '항만 파괴 및 선박 전복',
+              items: [
+                '방파제·배 등 구조물 파손',
+              ],
+            ),
+            SectionBlock(
+              title: '예고 없이 닥치는 2차·3차 해일',
+              items: [
+                '최초 파도 이후에도 반복 충격 발생',
+              ],
+            ),
+            SectionBlock(
+              title: '해안 접근 시 치명적 위험',
+              items: [
+                '물러난 바닷물에 접근 → 갑작스러운 역류로 실종',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '경보 수신 시',
+              items: [
+                '해안에서 즉시 고지대로 대피 (해발 10m 이상 권장)',
+                '바닷가·방파제 등지 접근 즉시 중단',
+                '가까운 구조물로 올라가지 말고 거리 확보',
+              ],
+            ),
+            SectionBlock(
+              title: '해일 도달 시',
+              items: [
+                '고층 건물 내 고층 이동 (이동 불가 시)',
+                '구조 요청은 전화보다는 문자 또는 재난 앱 이용',
+              ],
+            ),
+            SectionBlock(
+              title: '해일 이후',
+              items: [
+                '2차 해일에 대비해 구조 완료 전 복귀 금지',
+                '침수 지역 감전 사고 주의 (전기 차단 요청)',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/tsunami_card.png',
+          linkTitle: '[국민재난안전포털] 해일 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent10.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class TidePage extends StatefulWidget {
+  const TidePage({super.key});
+
+  @override
+  State<TidePage> createState() => _TidePageState();
+}
+
+class _TidePageState extends State<TidePage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '조류 발생 시 행동요령. '
+              '조류가 빠른 해역에서 활동하기 전에는 반드시 해당 지역의 물때표, 즉 간조와 만조 시각을 확인해야 합니다. '
+              '해양 체험이나 낚시는 조류가 약한 간조 전후 2시간 이내로 제한하는 것이 안전합니다. '
+              '조류가 강해지고 만조 도달이 임박하면 즉시 퇴로가 확보된 위치로 복귀하고, 방파제나 갯바위에서 활동 중일 경우에는 수위 상승에 각별히 주의해야 합니다. '
+              '만약 조류에 의해 고립되었다면, 당황하지 말고 위치 정보를 포함하여 119에 신고하고, 높은 지대에서 구조를 기다리세요.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '조수 (Tidal Phenomena)',
+      mainImageAsset: 'assets/tide_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 원인', content: '달과 태양의 인력에 의한 해수면의 주기적 변화'),
+        InfoRowData(title: '피해 위험', content: '간조·만조로 인한 갯벌 고립, 항해 지연'),
+        InfoRowData(title: '주의 지역', content: '갯벌, 방파제, 연안 낚시터 등'),
+        InfoRowData(title: '관련 기관', content: '해양수산부, 기상청'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '조수(또는 조석)는 달과 태양의 인력 작용으로 인해 바닷물의 수위가 주기적으로 오르내리는 자연현상입니다. 만조(밀물)와 간조(썰물)의 주기가 있으며, 갯벌 고립사고나 해안가 활동에 영향을 줄 수 있습니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '주의 이유',
+              items: [
+                '일반적 현상이지만, 계절별 조차(수위 차) 변화가 크며',
+                '대조기, 슈퍼문 등 특정 시기에는 위험 증가',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '갯벌 고립',
+              items: [
+                '간조 시 진입 → 만조 도달 시 퇴로 차단',
+              ],
+            ),
+            SectionBlock(
+              title: '해안 낚시 중 고립',
+              items: [
+                '테트라포드·방파제 등 물때 예측 실패',
+              ],
+            ),
+            SectionBlock(
+              title: '항해·운항 차질',
+              items: [
+                '간조 시 항로 수심 낮아져 접안 불가',
+              ],
+            ),
+            SectionBlock(
+              title: '사전 정보 없이 접근한 관광객',
+              items: [
+                '물때표 미확인 시 의외의 사고 발생',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '갯벌 체험/해안 낚시 전',
+              items: [
+                '해당 지역 물때표(간조/만조 시각) 필수 확인',
+                '체험 가능 시간은 간조 전후 2시간 이내로 제한',
+              ],
+            ),
+            SectionBlock(
+              title: '만조 도달 임박 시',
+              items: [
+                '퇴로 확보된 위치로 즉시 복귀',
+                '방파제·갯바위에서 활동 시 수위 상승 주의',
+              ],
+            ),
+            SectionBlock(
+              title: '고립 발생 시',
+              items: [
+                '구조 요청 시 위치 정보 포함해 119 신고',
+                '당황하지 말고 높은 지대에서 구조 대기',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/tide_card.png',
+          linkTitle: '[국민재난안전포털] 조류 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent10.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class FloodingPage extends StatefulWidget {
+  const FloodingPage({super.key});
+
+  @override
+  State<FloodingPage> createState() => _FloodingPageState();
+}
+
+class _FloodingPageState extends State<FloodingPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '침수 발생 시 행동요령. '
+              '사전 대비로는 반지하나 1층 주택에 거주하시는 분들은 역류 방지판과 물막이판을 설치하고, 침수 경보를 받으면 전기 차단기를 미리 내려야 합니다. '
+              '또한 지하주차장 등 침수 위험 지역에는 차량을 주차하지 마세요. '
+              '침수가 진행될 경우, 즉시 고지대나 옥상으로 대피하고, 하수구나 전기장치 근처에는 접근하지 마세요. '
+              '지하차도나 도로의 침수 구간은 절대 진입하지 않아야 합니다. '
+              '침수 이후에는 반드시 전기와 가스 전문가의 점검을 받은 후 복구를 시작해야 하며, 젖은 가전제품은 절대로 사용하지 마세요. '
+              '물 빠진 후에도 감전 사고가 발생할 수 있으니 각별히 주의하시기 바랍니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '침수 (Inundation)',
+      mainImageAsset: 'assets/flooding_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 원인', content: '집중호우, 하천 범람, 하수 역류, 해수 유입 등'),
+        InfoRowData(title: '피해 지역', content: '저지대 주택가, 반지하, 도로, 지하상가 등'),
+        InfoRowData(title: '피해 위험', content: '가전 침수, 감전, 인명 피해, 교통 마비'),
+        InfoRowData(title: '관련 기관', content: '기상청, 소방청, 지자체 재난대응본부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '침수는 일정 지역이 비·하천·하수 등의 물로 인해 잠기는 현상입니다. 특히 도심에서는 하수 역류, 빗물 유입으로 지하 주거지·차량·상가가 피해를 입기 쉽습니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '구분',
+              items: [
+                '단시간 강우 → 하수역류 침수',
+                '강변·저지대 → 하천 범람 침수',
+                '해안지역 → 폭풍 해일·조위 상승 침수',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '반지하 주택·저지대 침수',
+              items: [
+                '하수 역류로 실내 급속도 침수',
+              ],
+            ),
+            SectionBlock(
+              title: '감전 및 가스 사고',
+              items: [
+                '콘센트 침수, 누전, 보일러·가스 유출',
+              ],
+            ),
+            SectionBlock(
+              title: '도로 침수 및 차량 고립',
+              items: [
+                '지하차도, 하천 인근 도로 급속도 물에 잠',
+              ],
+            ),
+            SectionBlock(
+              title: '하수도 맨홀 뚜껑 유실',
+              items: [
+                '물에 잠겨 보이지 않아 보행 중 추락 위험',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '사전 대비',
+              items: [
+                '반지하·1층 주택: 역류방지판, 물막이판 설치',
+                '침수 경보 수신 시 전기 차단기 미리 내리기',
+                '침수 위험 지역 주차 금지 (지하주차장 등)',
+              ],
+            ),
+            SectionBlock(
+              title: '침수 진행 중',
+              items: [
+                '침수 시작 시 즉시 고지대 또는 옥상으로 대피',
+                '하수구, 전기장치 근처 접근 X',
+                '지하차도, 도로 침수 구간 진입 절대 금지',
+              ],
+            ),
+            SectionBlock(
+              title: '침수 후',
+              items: [
+                '반드시 전기·가스 전문가 점검 후 복구 시작',
+                '젖은 가전제품 사용 금지, 물 빠진 후에도 주의 필요',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/flooding_card.png',
+          linkTitle: '[국민재난안전포털] 침수 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent21.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
+class SpacePage extends StatefulWidget {
+  const SpacePage({super.key});
+
+  @override
+  State<SpacePage> createState() => _SpacePageState();
+}
+
+class _SpacePageState extends State<SpacePage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '우주전파재난 시 행동요령. '
+              '일반 시민의 경우, 일상생활에 직접적인 피해는 드물지만 위성 기반 서비스, 예를 들어 GPS 사용 시 오차가 발생할 수 있다는 점을 인지해야 합니다. '
+              '또한 항공기 탑승 시에는 기상청과 항공사의 우주기상 알림을 참고하는 것이 좋습니다. '
+              '정부와 관련 기관은 위성, 항공, 전력 시스템에 대한 보호 조치를 강화하고, 태양 활동을 상시 감시하며 즉시 알림 체계를 운영해야 합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '우주전파재난 (Space Weather Hazard)',
+      mainImageAsset: 'assets/space_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 원인', content: '태양폭발(플레어), 코로나질량방출(CME) 등'),
+        InfoRowData(title: '영향 대상', content: '위성, GPS, 항공기 통신, 전력망 등'),
+        InfoRowData(title: '피해 위험', content: '통신두절, 항공운항 장애, 위성 고장'),
+        InfoRowData(title: '관련 기관', content: '한국천문연구원, 과학기술정보통신부, 기상청'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '우주전파재난은 태양 활동의 급격한 변화(예: 태양 플레어, CME 등)로 인해 지구 주변의 전자기 환경에 영향을 미치는 현상입니다. 통신, 항공, 위성, 전력 시스템에 장애를 일으킬 수 있습니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '주요 원인',
+              items: [
+                '태양 플레어(Solar Flare)',
+                '코로나질량방출(Coronal Mass Ejection)',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: 'GPS·위성통신 오류',
+              items: [
+                '위치정보 왜곡, 군사용 장비 오류',
+              ],
+            ),
+            SectionBlock(
+              title: '항공기 운항 장애',
+              items: [
+                '고위도 노선 통신 불능, 경로 변경',
+              ],
+            ),
+            SectionBlock(
+              title: '전력망 장애',
+              items: [
+                '지자기폭풍으로 인한 변압기 손상',
+              ],
+            ),
+            SectionBlock(
+              title: '위성 장비 오작동',
+              items: [
+                '태양 입자에 의한 회로 오류',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '일반 시민',
+              items: [
+                '일상생활에 직접적 피해는 드물지만 위성 기반 서비스 (GPS 등) 사용 시 오차 가능성 인지',
+                '항공기 탑승 시 기상청·항공사 우주기상 알림 참고',
+              ],
+            ),
+            SectionBlock(
+              title: '정부/기관',
+              items: [
+                '위성·항공·전력 시스템 보호 조치 강화',
+                '태양 활동 감시 및 즉시 알림 체계 운영',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/space_card.png',
+          linkTitle: '[국민재난안전포털] 우주전파재난 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/prevent10.html?menuSeq=126',
+        ),
+      ],
+    );
+  }
+}
+
 class BlazePage extends StatefulWidget {
   const BlazePage({super.key});
 
@@ -2047,14 +2954,14 @@ class _TunnelPageState extends State<TunnelPage> {
       await flutterTts.setLanguage('ko-KR');
       await flutterTts.setSpeechRate(0.5);
       await flutterTts.speak(
-          '대형 화재 행동요령.'
-              '화재 발생 전에 소화기, 경보기, 피난 유도등을 설치하고 정기적으로 점검하세요. '
-              '비상 대피 통로를 미리 확인하고 숙지하며, 전기와 가스 시설은 주기적으로 점검해야 합니다. '
-              '화재 발생 시 불이 난 것을 인지하면 즉시 "불이야!"라고 외쳐 주변에 알립니다. '
-              '연기를 피하려면 자세를 낮추고, 입과 코는 젖은 수건이나 옷으로 가리며 이동하세요. '
-              '엘리베이터 대신 반드시 계단을 이용하고, 피할 수 없다면 방문을 닫고 문틈을 막은 뒤 구조를 요청하세요. '
-              '화재 이후에는 화상이나 연기 흡입 증상이 있다면 즉시 병원에서 진료를 받습니다. '
-              '사고가 발생한 장소에는 접근하지 말고, 재난지원금이나 주거 지원 등 피해 복구 절차를 확인하여 필요한 지원을 받으세요.'
+          '도로터널 사고 행동요령. '
+              '사고 발생 전에, 차량 간 안전거리를 확보하고, 라디오 주파수를 긴급 방송 수신이 가능한 채널로 설정하세요. '
+              '사고 발생 시에는 즉시 차량을 정차하고, 시동을 끄고 비상등을 켜세요. '
+              '차량 키는 꽂은 채로 두고, 문은 열어둡니다. '
+              '유도등을 따라 비상구로 대피하고, 젖은 천 등으로 입과 코를 가리세요. '
+              '사고 이후에는 터널 외부로 안전하게 대피한 뒤 구조를 요청하세요. '
+              '연기를 흡입한 경우 즉시 병원에서 진료를 받습니다. '
+              '사고를 목격했다면 경찰이나 한국도로공사에 관련 정보를 제공하세요.'
       );
     }
     setState(() {
@@ -2111,33 +3018,33 @@ class _TunnelPageState extends State<TunnelPage> {
           subtitle: 'Risk Factors',
           blocks: [
             SectionBlock(
-              title: '불길 확산',
+              title: '차량 간 연쇄 추돌',
               items: [
-                '가연성 자재, 구조적 문제로 확산 속도 매우 빠름',
+                '정체·급정거 상황에서 후방 차량 충돌 빈번',
               ],
             ),
             SectionBlock(
-              title: '유독가스 흡입',
+              title: '터널 내 화재',
               items: [
-                '질식 및 중독 위험 (CO, 유기화합물 등)',
+                '소화와 진입이 어려워 연기 확산이 매우 빠름',
               ],
             ),
             SectionBlock(
-              title: '대피 지연',
+              title: '짙은 연기와 유독가스',
               items: [
-                '연기 확산으로 시야 확보 어려움',
+                '밀폐 구조로 인해 질식 위험 높음',
               ],
             ),
             SectionBlock(
-              title: '소방 설비 미작동',
+              title: '정전 및 시야 불량',
               items: [
-                '스프링클러·비상등 등 점검 미흡 시 대응 불가',
+                '조명 장애 시 대피 방향 혼란 초래',
               ],
             ),
             SectionBlock(
-              title: '패닉 및 붕괴 위험',
+              title: '피난 유도 미흡',
               items: [
-                '인파 밀집 시 압사 사고 가능',
+                '피난구 위치 파악 어려움, 공황 유발',
               ],
             ),
           ],
@@ -2148,28 +3055,27 @@ class _TunnelPageState extends State<TunnelPage> {
           subtitle: 'Behavior Tips',
           blocks: [
             SectionBlock(
-              title: '화재 발생 전',
+              title: '사고 발생 전',
               items: [
-                '소화기·경보기·피난 유도등 설치 및 점검',
-                '비상 대피 통로 확인 및 숙지',
-                '전기·가스 시설 주기적 점검',
+                '차량 간 안전거리 확보',
+                '라디오 주파수 설정 (긴급 방송 수신 가능)',
               ],
             ),
             SectionBlock(
-              title: '화재 발생 시',
+              title: '사고 발생 시',
               items: [
-                '불이 난 것을 인지하면 즉시 “불이야!” 외치기',
-                '연기 피해 낮은 자세로 이동, 입과 코는 젖은 수건으로 가리기',
-                '엘리베이터 대신 계단 이용',
-                '피할 수 없으면 방 안에서 문틈 막고 구조 요청',
+                '즉시 차량 정차, 시동 끄고 비상등 켜기',
+                '차량 키를 꽂은 채 문은 열어두기',
+                '유도등 따라 비상구로 대피',
+                '젖은 천 등으로 입·코 가리기',
               ],
             ),
             SectionBlock(
-              title: '화재 이후',
+              title: '사고 이후',
               items: [
-                '화상·연기흡입 등 증상 시 즉시 병원 진료',
-                '사고 장소 접근 금지',
-                '재난지원금, 주거지원 등 피해 복구 절차 확인',
+                '터널 외부로 안전 대피 후 구조 요청',
+                '연기 흡입 시 즉시 병원 진료',
+                '목격 정보는 경찰이나 한국도로공사에 제공',
               ],
             ),
           ],
@@ -2180,9 +3086,626 @@ class _TunnelPageState extends State<TunnelPage> {
         RelatedMaterialsSection(
           title: '관련 자료',
           subtitle: 'Related Materials',
-          cardImageAsset: 'assets/blaze_card.png',
-          linkTitle: '[국민재난안전포털] 화재 바로가기',
-          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJKM5116.html?menuSeq=127',
+          cardImageAsset: 'assets/tunnel_card.png',
+          linkTitle: '[국민재난안전포털] 도로터널 사고 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJKM5517.html?menuSeq=127',
+        ),
+      ],
+    );
+  }
+}
+
+class ElevatorPage extends StatefulWidget {
+  const ElevatorPage({super.key});
+
+  @override
+  State<ElevatorPage> createState() => _ElevatorPageState();
+}
+
+class _ElevatorPageState extends State<ElevatorPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '엘리베이터 사고 발생 시 행동요령. '
+              '승강기 안에서 사고가 발생했을 경우, 비상버튼이나 인터폰을 눌러 구조를 요청하세요. '
+              '문을 억지로 열거나 탈출을 시도하지 말고, 엘리베이터 바닥에 낮게 앉아 침착하게 대기합니다. '
+              '휴대폰 사용이 가능하다면 119나 관리실에 연락하여 도움을 요청하세요. '
+              '외부인이 구조하려는 경우에는 전문가인 소방대원이나 기술자가 도착하기 전까지 구조를 시도하지 마세요. '
+              '특히, 위에서 문을 열거나 줄을 던지는 등의 행동은 매우 위험합니다. '
+              '사고를 예방하기 위해서는 다음 수칙을 지켜야 합니다. '
+              '과적 경고가 울리면 탑승을 중단하고, 어린이는 혼자 엘리베이터를 이용하지 않도록 합니다. '
+              '또한, 에스컬레이터를 이용할 때에는 손잡이를 꼭 잡는 것이 안전합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '승강기 안전사고 (Elevator Accident)',
+      mainImageAsset: 'assets/elevator_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 장소', content: '아파트, 학교, 상가, 지하철역 등'),
+        InfoRowData(title: '주요 원인', content: '정전, 고장, 문 끼임, 과적, 오작동'),
+        InfoRowData(title: '피해 위험', content: '질식, 추락, 끼임, 심리적 충격'),
+        InfoRowData(title: '관련 기관', content: '한국승강기안전공단, 소방청, 행정안전부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '승강기 안전사고는 엘리베이터나 에스컬레이터에서 발생하는 전기·기계적 이상 또는 이용자 부주의로 인한 사고입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '발생 예시',
+              items: [
+                '정전으로 인한 멈춤',
+                '출입문 끼임',
+                '과적 또는 점검 미비로 인한 추락',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '문 끼임 사고',
+              items: [
+                '승강기 문이 갑자기 닫히며 이용자나 물품이 끼임',
+              ],
+            ),
+            SectionBlock(
+              title: '정전 및 멈춤',
+              items: [
+                '정전 또는 전기 오류로 갇히는 상황 발생',
+              ],
+            ),
+            SectionBlock(
+              title: '끼임·낙상',
+              items: [
+                '승강기와 층 사이 틈에 발이 빠지는 사고',
+              ],
+            ),
+            SectionBlock(
+              title: '심리적 불안정',
+              items: [
+                '밀폐된 공간에서 갇혀 공황, 호흡곤란 유발',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '승강기 안에서 사고 발생 시',
+              items: [
+                '비상버튼 또는 인터폰을 눌러 구조 요청',
+                '문을 억지로 열거나 탈출 시도 X',
+                '엘리베이터 바닥에 낮게 앉아 대기',
+                '휴대폰 사용 가능 시 119 또는 관리실 연락',
+              ],
+            ),
+            SectionBlock(
+              title: '외부인이 구조할 경우',
+              items: [
+                '전문가(소방/기술자) 도착 전 구조 시도 X',
+                '위에서 문을 열거나 줄을 던지는 행동은 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '사고 예방을 위한 이용 수칙',
+              items: [
+                '과적 경고 시 탑승 중단',
+                '어린이 혼자 탑승 X',
+                '에스컬레이터 이용 시 손잡이 잡기 권장',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/elevator_card.png',
+          linkTitle: '[국민재난안전포털] 승강기 안전 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJK15043.html?cd1=43&cd2=999&pagecd=SDIJK150.43&menuSeq=128',
+        ),
+      ],
+    );
+  }
+}
+
+class FirstaidPage extends StatefulWidget {
+  const FirstaidPage({super.key});
+
+  @override
+  State<FirstaidPage> createState() => _FirstaidPageState();
+}
+
+class _FirstaidPageState extends State<FirstaidPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '응급 처치 시 행동요령. '
+              '기본 원칙은 의식을 확인한 뒤, 119에 신고하고 즉시 처치하는 순서를 기억하는 것입니다. '
+              '무엇보다도 직접 처치를 하기 전에 본인의 안전을 먼저 확보해야 합니다. '
+              '외부인이 응급 처치를 할 경우, 상황에 따라 다음과 같이 조치합니다. '
+              '출혈이 있을 때는 깨끗한 천으로 상처 부위를 눌러 지혈하고, 지혈대는 반드시 전문가의 지시에 따라 사용합니다. '
+              '화상이 있을 경우에는 흐르는 찬물에 10분에서 20분 정도 화상 부위를 식혀야 합니다. '
+              '기도가 폐쇄되었을 때는 하임리히법을 실시해야 합니다. '
+              '심정지가 발생하면 즉시 의식을 확인하고, 심폐소생술인 CPR을 시행하며, 자동제세동기 AED가 있다면 함께 사용합니다. '
+              '골절이 의심될 경우에는 부목으로 환부를 고정하고, 움직이지 않도록 한 뒤 병원으로 즉시 이동합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '응급처치 (First Aid)',
+      mainImageAsset: 'assets/firstaid_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 장소', content: '가정, 학교, 직장, 야외 등 일상 모든 공간'),
+        InfoRowData(title: '주요 원인', content: '골절, 화상, 출혈, 기도 폐쇄, 심정지 등'),
+        InfoRowData(title: '피해 위험', content: '2차 감염, 출혈 과다, 뇌 손상, 사망'),
+        InfoRowData(title: '관련 기관', content: '소방청, 대한적십자사, 보건복지부'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '응급처치는 사고나 질병 발생 직후 전문 의료진이 도착하기 전까지 생명을 지키고 상처를 악화시키지 않기 위해 시행하는 기본적인 응급 대응입니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '중요성',
+              items: [
+                '심정지 시 4분 이내 응급처치 여부가 생존율에 결정적',
+                '일반인이 알고 있는 간단한 대처법만으로도 생명 구조 가능',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '처치 지연',
+              items: [
+                '적절한 응급처치 미숙으로 상황 악화',
+              ],
+            ),
+            SectionBlock(
+              title: '잘못된 대처',
+              items: [
+                '이물질 제거 실패, 화상에 얼음 대기 등 오히려 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '도움 요청 지연',
+              items: [
+                '119 신고보다 당황한 상태로 오작동 또는 방관',
+              ],
+            ),
+            SectionBlock(
+              title: '보호 장비 미비',
+              items: [
+                '감염 위험, CPR 시 입 대 입 구조 중 감염 전파',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '기본 원칙',
+              items: [
+                '의식 확인 → 119 신고 → 즉시 처치 순서 기억',
+                '직접 처치 전 본인 안전 확보',
+              ],
+            ),
+            SectionBlock(
+              title: '외부인이 구조할 경우',
+              items: [
+                '출혈: 깨끗한 천으로 압박 후 지혈, 지혈대는 전문가 지시 시 사용',
+                '화상: 흐르는 찬물에 10~20분 식히기',
+                '기도 폐쇄: 하임리히법 실시',
+                '심정지: 의식 확인 후 즉시 심폐소생술(CPR), 자동제세동기(AED) 사용',
+                '골절: 부목 고정, 환부 움직이지 않게 하고 즉시 병원 이동',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/firstaid_card.png',
+          linkTitle: '[국민재난안전포털] 응급처치 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJK14433.html?cd1=33&cd2=999&pagecd=SDIJK144.33&menuSeq=128',
+        ),
+      ],
+    );
+  }
+}
+
+class CPRPage extends StatefulWidget {
+  const CPRPage({super.key});
+
+  @override
+  State<CPRPage> createState() => _CPRPageState();
+}
+
+class _CPRPageState extends State<CPRPage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '심정지 환자 발생 시 심폐소생술 CPR 행동요령. '
+              'Step 1. 반응 확인 및 119 신고. '
+              '환자의 어깨를 가볍게 두드리며 "괜찮으세요?"라고 물어 반응을 확인합니다. '
+              '반응이 없다면 즉시 119에 신고하고, 주변 사람들에게 도움을 요청합니다. '
+              '가능하다면 자동제세동기, 즉 AED를 가져오도록 합니다. '
+              'Step 2. 가슴 압박 시행. '
+              '압박 위치는 양쪽 유두 사이, 가슴 중앙입니다. '
+              '손바닥을 겹쳐서 체중을 실어 강하게 압박합니다. '
+              '압박 깊이는 5에서 6센티미터, 속도는 분당 100에서 120회가 적절합니다. '
+              '리듬 예시는 “Stayin’ Alive” 노래의 템포와 유사한 1분에 104 비트입니다. '
+              'Step 3. AED 사용. '
+              'AED가 도착하면 기계의 음성 안내에 따라 패드를 부착합니다. '
+              '“전기 충격” 버튼은 반드시 모두 떨어진 상태에서 눌러야 합니다. '
+              '이후에는 가슴 압박과 AED 사용을 반복하며, 의료진이 도착할 때까지 계속합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '심폐소생술 (CPR)',
+      mainImageAsset: 'assets/cpr_detail.png',
+      infoRows: [
+        InfoRowData(title: '필요 상황', content: '심정지, 호흡 정지, 의식 없음'),
+        InfoRowData(title: '주요 원인', content: '심근경색, 호흡곤란, 기도폐쇄, 익수 등'),
+        InfoRowData(title: '시행 목적', content: '뇌 손상 예방, 생명 유지'),
+        InfoRowData(title: '관련 기관', content: '소방청, 보건복지부, 대한적십자사'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '심폐소생술(CPR)은 심장과 호흡이 멈춘 사람의 생명을 되살리기 위한 기본 응급처치 방법입니다. 뇌 손상을 막기 위해 4분 이내 실시하는 것이 매우 중요합니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '중요성',
+              items: [
+                '심정지 후 1분마다 생존율 약 7~10%씩 감소',
+                '일반인도 배워서 시행 가능, AED와 병행 시 생존율 2배 이상 증가',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '초기 지연',
+              items: [
+                '4분 이내 CPR이 없을 경우 뇌 손상 위험',
+              ],
+            ),
+            SectionBlock(
+              title: '주저함/두려움',
+              items: [
+                '구조자들이 “내가 해도 되나”라고 망설이는 경우 많음',
+              ],
+            ),
+            SectionBlock(
+              title: '오류 있는 가슴압박',
+              items: [
+                '깊이 부족, 속도 느림, 위치 틀림 등이 심장 재기동 실패 원인',
+              ],
+            ),
+            SectionBlock(
+              title: 'AED 부재',
+              items: [
+                '자동제세동기 미비 또는 사용법 미숙 시 회복 지연',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: 'Step 1. 반응 확인 및 119 신고',
+              items: [
+                '어깨를 가볍게 두드리며 "괜찮으세요?" 확인',
+                '반응 없으면 즉시 119 신고 및 주변 도움 요청',
+                '가능하면 AED(제세동기) 요청',
+              ],
+            ),
+            SectionBlock(
+              title: 'Step 2. 가슴 압박 시행',
+              items: [
+                '위치: 양쪽 유두 사이 가슴 중앙',
+                '자세: 손바닥 겹쳐서 체중 실어 압박',
+                '깊이: 5~6cm, 속도: 분당 100~120회',
+                '리듬 예시:“Stayin’ Alive” 템포 (BPM 104)',
+              ],
+            ),
+            SectionBlock(
+              title: 'Step 3. AED 사용 (있을 경우)',
+              items: [
+                '기계 음성 안내에 따라 패드 부착',
+                '“전기 충격” 버튼은 분리된 상태에서만 누름',
+                '이후 압박과 AED 반복(의료진 도착 전까지)',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/cpr_card.png',
+          linkTitle: '[국민재난안전포털] 심폐소생술 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJK14739.html?cd1=39&cd2=999&pagecd=SDIJK147.39&menuSeq=128',
+        ),
+      ],
+    );
+  }
+}
+
+class Hikingpage extends StatefulWidget {
+  const Hikingpage({super.key});
+
+  @override
+  State<Hikingpage> createState() => _HikingpageState();
+}
+
+class _HikingpageState extends State<Hikingpage> {
+  final FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _toggleTts() async {
+    if (isSpeaking) {
+      await flutterTts.stop();
+    } else {
+      await flutterTts.setLanguage('ko-KR');
+      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.speak(
+          '산행 시 행동요령입. '
+              '먼저 산행 전에 해야 할 일입니다. '
+              '기상 정보를 미리 확인하고, 무리한 일정은 피해야 합니다. '
+              '등산로는 사전에 확인하고, 반드시 공식 탐방로 위주로 계획합니다. '
+              '산행 시간과 코스는 가족이나 지인에게 미리 공유하세요. '
+              '다음은 산행 중 주의사항입니다. '
+              '지정된 탐방로에서 벗어나지 말고, 비상식량과 물, 휴대전화, 손전등을 반드시 챙깁니다. '
+              '낙석이나 가파른 구간에서는 한 사람씩 조심스럽게 통과해야 합니다. '
+              '마지막으로 사고가 발생했을 때입니다. '
+              '즉시 119 또는 산악구조대에 신고하고, 위치 전송이 가능한 앱을 활용합니다. '
+              '부상으로 인해 움직이기 어렵다면 눈에 잘 띄는 곳에서 구조를 기다리세요. '
+              '저체온증이 우려될 경우에는 최대한 체온을 유지하고, 불필요한 움직임은 삼가야 합니다.'
+      );
+    }
+    setState(() {
+      isSpeaking = !isSpeaking;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DisasterPageTemplate(
+      appBarTitle: '재난정보',
+      headerTitle: '행정안전부 국민행동요령 안내',
+      disasterName: '산행 안전사고 (Hiking Accident Safety)',
+      mainImageAsset: 'assets/hiking_detail.png',
+      infoRows: [
+        InfoRowData(title: '발생 시기', content: '봄·가을 등산 성수기, 기상 악화 시'),
+        InfoRowData(title: '주요 원인', content: '미끄럼, 낙석, 실족, 탈진, 길 잃음'),
+        InfoRowData(title: '피해 위험', content: '골절, 저체온증, 실종, 사망'),
+        InfoRowData(title: '관련 기관', content: '산림청, 소방청, 국립공원공단'),
+      ],
+      updateDate: '2025.05.27',
+      tabFilters: ['재난 개요', '위험 요소', '행동요령', '관련 자료'],
+      tabContents: [
+        // 1. 재난 개요
+        DisasterOverviewSection(
+          title: '재난 개요',
+          subtitle: 'Disaster Overview',
+          blocks: [
+            SectionBlock(
+              title: '정의',
+              items: [
+                '산행 안전사고는 등산이나 트레킹 중 발생하는 낙상, 실족, 조난, 기상 변화 등으로 인한 각종 인명사고를 말합니다.',
+              ],
+            ),
+            SectionBlock(
+              title: '중요성',
+              items: [
+                '구조가 지연되기 쉬운 지형',
+                '기상 변화가 급격하며, 체력 고갈 시 위험 가중',
+                '혼자 산행 시 사고 발견이 늦어짐',
+              ],
+            ),
+          ],
+        ),
+        // 2. 위험 요소
+        RiskFactorsSection(
+          title: '위험 요소',
+          subtitle: 'Risk Factors',
+          blocks: [
+            SectionBlock(
+              title: '실족·미끄럼',
+              items: [
+                '낙엽, 눈·비로 미끄러운 길에서 넘어짐',
+              ],
+            ),
+            SectionBlock(
+              title: '길 잃음 / 조난',
+              items: [
+                '구조자들이 “내가 해도 되나”라고 망설이는 경우 많음',
+              ],
+            ),
+            SectionBlock(
+              title: '저체온증·탈수',
+              items: [
+                '급격한 기온 변화에 대비하지 못한 복장',
+                '물 부족, 무리한 코스 진행 시 탈진',
+              ],
+            ),
+            SectionBlock(
+              title: '통신 두절',
+              items: [
+                '산악 지역의 통신 음영으로 구조 지연',
+              ],
+            ),
+          ],
+        ),
+        // 3. 행동요령 (TTS 버튼 포함)
+        BehaviorTipsSection(
+          title: '행동요령',
+          subtitle: 'Behavior Tips',
+          blocks: [
+            SectionBlock(
+              title: '산행 전',
+              items: [
+                '기상 정보 확인 및 무리한 계획 피하기',
+                '등산로 사전 확인 (공식 탐방로 위주)',
+                '가족·지인에게 산행 시간과 코스 공유',
+              ],
+            ),
+            SectionBlock(
+              title: '산행 중',
+              items: [
+                '지정된 탐방로 이탈 금지',
+                '비상식량·물·휴대전화·손전등 지참',
+                '낙석·가파른 구간에서는 한 사람씩 통과',
+              ],
+            ),
+            SectionBlock(
+              title: '사고 발생 시',
+              items: [
+                '119 또는 산악구조대에 즉시 신고 (위치 전송 가능 앱 활용)',
+                '움직이기 어려운 경우 눈에 띄는 곳에서 구조 대기',
+                '저체온 우려 시 보온 유지, 불필요한 움직임 금지',
+              ],
+            ),
+          ],
+          onTtsPressed: _toggleTts,
+          isSpeaking: isSpeaking,
+        ),
+        // 4. 관련 자료
+        RelatedMaterialsSection(
+          title: '관련 자료',
+          subtitle: 'Related Materials',
+          cardImageAsset: 'assets/hiking_card.png',
+          linkTitle: '[국민재난안전포털] 산행안전 바로가기',
+          linkUrl: 'https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/contents/prevent/SDIJK14029.html?cd1=29&cd2=999&pagecd=SDIJK140.29&menuSeq=128',
         ),
       ],
     );

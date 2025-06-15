@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
@@ -50,6 +51,10 @@ class _LoginState extends State<Login> {
         final data = jsonDecode(response.body);
         if (data['success']) {
           globalUid = data['uid'];
+
+          // SharedPreferences에 저장
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('uid', globalUid!);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const Home()),
