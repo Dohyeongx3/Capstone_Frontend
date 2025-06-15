@@ -50,6 +50,10 @@ class _LoginState extends State<Login> {
         final data = jsonDecode(response.body);
         if (data['success']) {
           globalUid = data['uid'];
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
         } else {
           _showErrorDialog(data['message'] ?? '로그인 실패');
         }
