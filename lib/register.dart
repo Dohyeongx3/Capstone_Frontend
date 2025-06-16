@@ -173,21 +173,9 @@ class _RegisterState extends State<Register> {
         TextField(
           controller: _idController,
           decoration: InputDecoration(
-            labelText: '아이디',
-            hintText: '5~13자의 영문 또는 영문 + 숫자 합',
+            labelText: '이메일',
+            hintText: 'email@example.com',
             border: const OutlineInputBorder(),
-            suffixIcon: TextButton(
-              onPressed: () {
-                //TODO:DB에서 이미 존재하는 아이디인지 비교
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(50, 40),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text("중복 확인", style: TextStyle(fontSize: 12)),
-            ),
           ),
         ),
         const SizedBox(height: 40),
@@ -307,9 +295,9 @@ class _RegisterState extends State<Register> {
                       return;
                     }
 
-                    if (_idController.text.length < 5 || _idController.text.length > 13) {
+                    if (!_idController.text.contains('@')) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('아이디는 5~13자여야 합니다.')),
+                        const SnackBar(content: Text('올바른 이메일 형식으로 입력해주세요.')),
                       );
                       return;
                     }

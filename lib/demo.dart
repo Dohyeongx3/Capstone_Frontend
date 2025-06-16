@@ -14,7 +14,6 @@ import 'info_datail.dart';
 import 'login.dart';
 import 'setting.dart';
 import 'shelter.dart';
-import 'notification.dart';
 
 class DemoHome extends StatefulWidget {
   const DemoHome({Key? key}) : super(key: key);
@@ -515,17 +514,6 @@ class _DemoHomeState extends State<DemoHome> with RouteAware {
               const Text("홈 메인", style: TextStyle(fontSize: 18)),
               const Spacer(),
               const SizedBox(width: 10),
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NotificationPage(),
-                    ),
-                  );
-                },
-              ),
             ],
           ),
         ),

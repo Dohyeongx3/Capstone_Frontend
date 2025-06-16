@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'escape.dart';
+import 'globals.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
-import 'notification.dart';
 import 'setting.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -19,6 +21,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   int _selectedIndex = 4; // 설정 화면에서 진입했기 때문에 기본 인덱스는 4
 
+  /*
   //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
@@ -28,6 +31,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'phone': '010-1234-5678',
     'status': 'SAFE',
   };
+   */
+
+  Map<String, dynamic>? UserData;
+
+  Future<void> fetchUserData() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        UserData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
+  }
 
   // TextEditingController 선언
   late TextEditingController _nameController;
@@ -39,14 +62,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-
+    fetchUserData();
     final user = UserData;
 
-    _nameController = TextEditingController(text: user['name']);
-    _yearController = TextEditingController(text: user['year'].toString());
-    _monthController = TextEditingController(text: user['month'].toString());
-    _dayController = TextEditingController(text: user['day'].toString());
-    _phoneController = TextEditingController(text: user['phone']);
+    _nameController = TextEditingController(text: user?['name']);
+    _yearController = TextEditingController(text: user?['year'].toString());
+    _monthController = TextEditingController(text: user?['month'].toString());
+    _dayController = TextEditingController(text: user?['day'].toString());
+    _phoneController = TextEditingController(text: user?['phone']);
   }
 
   @override
@@ -124,20 +147,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       ),
       centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NotificationPage(),
-              ),
-            );
-          },
-        ),
-        const SizedBox(width: 16),
-      ],
     );
   }
 
@@ -228,7 +237,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // 생년월일 검사
                 final yearRegex = RegExp(r'^(19|20)\d{2}$');
                 final monthRegex = RegExp(r'^(0[1-9]|1[0-2])$');
@@ -264,8 +273,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 return;
                 }
 
+                final name = _nameController.text.trim();
+                final year = _yearController.text.trim();
+                final month = _monthController.text.trim();
+                final day = _dayController.text.trim();
+                final phone = _phoneController.text.trim();
+                final response = await http.post(
+                  Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/editProfile'),
+                  headers: { 'Content-Type': 'application/json' },
+                  body: jsonEncode({
+                    'uId': globalUid,
+                    'name': name,
+                    'year': year,
+                    'month': month,
+                    'day': day,
+                    'phone': phone
+                  }),
+                );
 
-                // TODO: 사용자 globalUid 를 보내면 위의 컨트롤러들에 해당하는 값으로 서버에서 변경
+                if (response.statusCode == 200) {
+                  fetchUserData();
+                  print('사용자 프로필 수정 성공');
+                } else {
+                  print('사용자 프로필 수정 실패');
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0073FF),

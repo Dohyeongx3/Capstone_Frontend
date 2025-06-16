@@ -13,6 +13,9 @@ class _IDPWfindState extends State<IDPWfind> {
   late bool _isIdFindSelected;
   bool _showResetPasswordForm = false;
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+
   final TextEditingController _newPwController = TextEditingController();
   final TextEditingController _confirmPwController = TextEditingController();
 
@@ -30,7 +33,7 @@ class _IDPWfindState extends State<IDPWfind> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '아이디/비밀번호 찾기',
+          '이메일/비밀번호 찾기',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -56,17 +59,11 @@ class _IDPWfindState extends State<IDPWfind> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!_showResetPasswordForm)
-                Row(
-                  children: [
-                    _buildSelectionBox("아이디 찾기", true),
-                    _buildSelectionBox("비밀번호 찾기", false),
-                  ],
-                ),
               const SizedBox(height: 50),
               if (_showResetPasswordForm)
                 _buildResetPasswordForm()
               else
-                _isIdFindSelected ? _buildIdFindForm() : _buildPwFindForm(),
+                _buildPwFindForm(),
             ],
           ),
         ),
@@ -104,80 +101,22 @@ class _IDPWfindState extends State<IDPWfind> {
     );
   }
 
-  Widget _buildIdFindForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          keyboardType: TextInputType.phone,
-          decoration: InputDecoration(
-            labelText: '휴대전화번호',
-            hintText: "'-' 제외하고 입력해주세요",
-            border: const OutlineInputBorder(),
-            suffixIcon: TextButton(
-              onPressed: () {
-                // TODO: 파이어베이스 통한 휴대폰 인증번호 로직
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(50, 40),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text("인증번호 전송", style: TextStyle(fontSize: 12)),
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        const TextField(
-          decoration: InputDecoration(
-            labelText: '인증번호',
-            hintText: '인증번호를 입력해주세요',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 50),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () {
-              // TODO: 아이디 찾기 로직
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0073FF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(7),
-              ),
-            ),
-            child: const Text("아이디 찾기", style: TextStyle(fontSize: 16, color: Colors.white)),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildPwFindForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const TextField(
-          decoration: InputDecoration(
-            labelText: '아이디',
-            hintText: '아이디를 입력해주세요',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 20),
+        // 이메일 입력
         TextField(
-          keyboardType: TextInputType.phone,
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            labelText: '휴대전화번호',
-            hintText: "'-' 제외하고 입력해주세요",
+            labelText: '이메일',
+            hintText: '이메일을 입력해주세요',
             border: const OutlineInputBorder(),
             suffixIcon: TextButton(
               onPressed: () {
-                // TODO: 파이어베이스 통한 휴대폰 인증번호 로직
+                // TODO: 이메일로 인증번호 전송
+                print('인증번호 전송 to ${_emailController.text}');
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,
@@ -189,21 +128,30 @@ class _IDPWfindState extends State<IDPWfind> {
             ),
           ),
         ),
+
         const SizedBox(height: 20),
-        const TextField(
-          decoration: InputDecoration(
+
+        // 인증번호 입력
+        TextField(
+          controller: _codeController,
+          decoration: const InputDecoration(
             labelText: '인증번호',
-            hintText: '인증번호를 입력해주세요',
+            hintText: '이메일로 받은 인증번호를 입력해주세요',
             border: OutlineInputBorder(),
           ),
         ),
+
         const SizedBox(height: 50),
+
+        // 인증 확인 버튼
         SizedBox(
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
             onPressed: () {
-              //TODO: 아이디와 인증번호가 DB정보와 맞아야 넘어가도록 처리
+              // TODO: 이메일과 인증번호 검증 후 다음 화면으로
+              print('입력한 이메일: ${_emailController.text}');
+              print('입력한 인증번호: ${_codeController.text}');
               setState(() {
                 _showResetPasswordForm = true;
               });

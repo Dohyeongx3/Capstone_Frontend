@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'account.dart';
 import 'demo.dart';
@@ -11,7 +12,6 @@ import 'group.dart';
 import 'home.dart';
 import 'info.dart';
 import 'main.dart';
-import 'notification.dart';
 import 'terms.dart';
 import 'editprofile.dart';
 
@@ -28,6 +28,7 @@ class _SettingState extends State<Setting> {
   bool isLocationEnabled = true;
   bool isNotificationEnabled = false;
 
+  /*
   //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
     'name': '사용자 이름',
@@ -37,10 +38,31 @@ class _SettingState extends State<Setting> {
     'phone': '010-1234-5678',
     'status': 'SAFE',
   };
+   */
+
+  Map<String, dynamic>? UserData;
+
+  Future<void> fetchUserData() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        UserData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    fetchUserData();
     _checkLocationPermission(); // 시작 시 권한 체크
   }
 
@@ -281,7 +303,7 @@ class _SettingState extends State<Setting> {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DemoHome()),
+            MaterialPageRoute(builder: (context) => Home()),
           );
         }
       },
@@ -308,17 +330,6 @@ class _SettingState extends State<Setting> {
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationPage(),
-                ),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -327,8 +338,8 @@ class _SettingState extends State<Setting> {
   Widget _buildBody() {
     final user = UserData;
 
-    final String name = user['name'];
-    final String phone = user['phone'];
+    final String name = user?['name']?? '이름 없음';
+    final String phone = user?['phone']?? '전화번호 없음';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -430,18 +441,6 @@ class _SettingState extends State<Setting> {
             subtitle: '재난 발생 시 내 위치 기준으로 정보를 제공합니다.',
             value: isLocationEnabled,
               onChanged: _handleLocationToggle,
-          ),
-
-          const SizedBox(height: 12),
-
-          // 재난 알림
-          _buildToggleSetting(
-            title: '재난 알림 활성화',
-            subtitle: '위험 지역 접근 시 알림을 전송합니다.',
-            value: isNotificationEnabled,
-            onChanged: (value) {
-              isNotificationEnabled = value;
-            },
           ),
 
           const SizedBox(height: 16),

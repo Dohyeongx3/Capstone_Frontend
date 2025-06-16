@@ -5,7 +5,6 @@ import 'demo.dart';
 import 'escape.dart';
 import 'home.dart';
 import 'info.dart';
-import 'notification.dart';
 import 'setting.dart';
 import 'group_template.dart';
 import 'globals.dart';
@@ -79,6 +78,26 @@ class _GroupState extends State<Group> {
       print('사용자 정보 불러오기 실패');
     }
   }
+
+  List<Map<String, dynamic>> groups =[];
+
+  Future<void> fetchGroups() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/groups'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      setState(() {
+        groups = List<Map<String, dynamic>>.from(data);
+      });
+    } else {
+      print('그룹 목록 불러오기 실패');
+    }
+  }
+
   /*
   //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
   final Map<String, dynamic> UserData = {
@@ -89,7 +108,7 @@ class _GroupState extends State<Group> {
     'phone': '010-1234-5678',
     'status': 'SAFE',
   };
-  */
+
   //TODO: 클라에서 globalUid를 보내면 globalUid에 맞는 유저가 속한 그룹과 그 그룹에 관한 정보(그룹번호,그룹명,그룹초대코드)와 멤버에 관한 정보(멤버에 대한 globalUid,멤버이름,그룹장여부,상태,위치,전화번호) 싹 불러오기
   final List<Map<String, dynamic>> groups = [
     {
@@ -101,7 +120,7 @@ class _GroupState extends State<Group> {
           'uid': 'user001',
           'name': '그룹장',
           'isLeader': true,
-          'status': '안전',
+          'status': 'SAFE',
           'location': '위치1',
           'phone': '010-0000-0000',
         },
@@ -109,7 +128,7 @@ class _GroupState extends State<Group> {
           'uid': 'user002',
           'name': '멤버1',
           'isLeader': false,
-          'status': '위험',
+          'status': 'DANGER',
           'location': '위치2',
           'phone': '010-1111-1111',
         },
@@ -124,7 +143,7 @@ class _GroupState extends State<Group> {
           'uid': 'user003',
           'name': '다른장',
           'isLeader': true,
-          'status': '위험',
+          'status': 'DANGER',
           'location': '위치X',
           'phone': '010-3333-3333',
         },
@@ -132,13 +151,14 @@ class _GroupState extends State<Group> {
           'uid': 'user004',
           'name': '다른멤버',
           'isLeader': false,
-          'status': '안전',
+          'status': 'SAFE',
           'location': '위치Y',
           'phone': '010-4444-4444',
         },
       ],
     },
   ];
+  */
   late List<Map<String, String?>> dangerMembers;
 
   Future<void> showCreateGroupDialog(BuildContext context) async {
@@ -274,8 +294,21 @@ class _GroupState extends State<Group> {
     );
 
     if (groupName != null && groupName.isNotEmpty) {
-      // TODO: 클라이언트에서 globalUid와 위에 입력한 groupName 변수를 보내면 서버에서 해당 글로벌uid를 가진 유저가 그룹장이고 위 입력한 그룹이름의 그룹이 위 groups 리스트에 추가되고 해당 초대 코드를 밑에 invitecode 변수로 불러올수 있게 설정
-      const String inviteCode = "ABCDEF"; // 예시
+      String inviteCode = "";
+      final response = await http.post(
+        Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/createGroup'),
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonEncode({ 'groupName': groupName,'uId': globalUid }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          inviteCode = data['inviteCode'];
+        });
+      } else {
+        print('그룹 목록 불러오기 실패');
+      }
       await showGroupCreatedDialog(context, inviteCode);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -516,7 +549,21 @@ class _GroupState extends State<Group> {
     );
 
     if (result != null && result.isNotEmpty) {
-      // TODO: 사용자가 입력한 초대코드가 위의 final result 변수에 저장되는데 서버에서 이에 맞는 그룹의 그룹장에게 초대 알림 전송
+      final response = await http.post(
+        Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/joinGroup'),
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonEncode({ 'groupCode': result ,'uId': globalUid }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('그룹 참가 성공')),
+        );
+        print('그룹 참가 성공');
+        fetchGroups();
+      } else {
+        print('그룹 참가 실패');
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('입력한 그룹코드: $result')),
       );
@@ -525,9 +572,11 @@ class _GroupState extends State<Group> {
 
   void initState() {
     super.initState();
+    fetchUserData();
+    fetchGroups();
     dangerMembers = groups
         .expand((group) => group['members'] as List<dynamic>)
-        .where((member) => member['status'] == '위험')
+        .where((member) => member['status'] == 'DANGER')
         .map<Map<String, String?>>((member) => {
       'name': member['name'] as String,
     })
@@ -576,17 +625,6 @@ class _GroupState extends State<Group> {
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationPage(),
-                ),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -602,15 +640,15 @@ class _GroupState extends State<Group> {
     switch (user?['status']) {
       case 'SAFE':
         statusColor = const Color(0xFF00BB6D);
-        statusText = '안전';
+        statusText = 'SAFE';
         break;
       case 'DANGER':
         statusColor = const Color(0xFFFF6200);
-        statusText = '위험';
+        statusText = 'DANGER';
         break;
       case 'CHECKING':
         statusColor = const Color(0xFF007EFF);
-        statusText = '확인중';
+        statusText = 'CHECKING';
         break;
       default:
         statusColor = Colors.grey;
@@ -854,6 +892,7 @@ class _GroupState extends State<Group> {
                             builder: (_) => GroupPageTemplate(
                               groupInfo: group,
                               members: List<Map<String, dynamic>>.from(group['members']),
+                              onGroupChanged: fetchGroups,
                             ),
                           ),
                         );

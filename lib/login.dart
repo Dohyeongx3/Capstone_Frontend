@@ -6,7 +6,7 @@ import 'dart:convert';
 
 
 import 'onboard.dart';
-import 'IDPWfind.dart';
+import 'PWreset.dart';
 import 'home.dart';
 import 'globals.dart';
 
@@ -19,7 +19,6 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool _obscureText = true;
-  bool _autoLogin = false;
 
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
@@ -62,8 +61,11 @@ class _LoginState extends State<Login> {
         } else {
           _showErrorDialog(data['message'] ?? '로그인 실패');
         }
-      } else {
-        _showErrorDialog('서버 오류: ${response.statusCode}');
+      } else if(response.statusCode == 401){
+        final data = jsonDecode(response.body);
+        _showErrorDialog('로그인 실패: ${data['message']}');
+      } else{
+        _showErrorDialog('서버 오류 : ${response.statusCode}');
       }
     } catch (e) {
       _showErrorDialog('서버와 연결할 수 없습니다.');
@@ -125,7 +127,8 @@ class _LoginState extends State<Login> {
             TextField(
               controller: _idController,
               decoration: const InputDecoration(
-                labelText: '아이디',
+                labelText: '이메일',
+                hintText: 'email@example.com',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -135,6 +138,7 @@ class _LoginState extends State<Login> {
               obscureText: _obscureText,
               decoration: InputDecoration(
                 labelText: '비밀번호',
+                hintText: '8~16자의 영문 대/소문자, 숫자, 특수문자',
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -147,20 +151,6 @@ class _LoginState extends State<Login> {
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                Checkbox(
-                  value: _autoLogin,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _autoLogin = value ?? false;
-                    });
-                  },
-                ),
-                const Text("자동 로그인"),
-              ],
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -204,14 +194,6 @@ class _LoginState extends State<Login> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const IDPWfind(isIdFindSelected: true)));
-                  },
-                  child: const Text("아이디 찾기", style: TextStyle(color: Colors.black),),
-                ),
-                const SizedBox(width: 20),
-                const Text("|"),
                 const SizedBox(width: 20),
                 TextButton(
                   onPressed: () {

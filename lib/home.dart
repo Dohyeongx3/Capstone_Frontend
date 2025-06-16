@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'escape.dart';
+import 'globals.dart';
 import 'group.dart';
 import 'info.dart';
 import 'login.dart';
 import 'setting.dart';
 import 'shelter.dart';
-import 'notification.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -24,16 +27,38 @@ class _HomeState extends State<Home> {
   String _currentLocation = '위치 확인 중...';
   String _currentAddress = '주소 확인 중...';
 
+  /*
   // TODO: 사용자의 globalUid 보내면 해당 사용자의 위험상태를 서버에서 불러오기
   final List<Map<String, dynamic>> userStatusList = [
     {
       'status': 'SAFE', // 혹은 'DANGER', 'CHECKING'
     }
   ];
+   */
+
+  Map<String, dynamic>? UserData;
+
+  Future<void> fetchUserData() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        UserData = data;
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    fetchUserData();
     _determinePosition();
   }
 
@@ -122,7 +147,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final String currentState = userStatusList.first['status'];
+    final String? currentState = UserData?['status'];
 
     Color backgroundColor;
     String imageAsset;
@@ -314,17 +339,6 @@ class _HomeState extends State<Home> {
               const Text("홈 메인", style: TextStyle(fontSize: 18)),
               const Spacer(),
               const SizedBox(width: 10),
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NotificationPage(),
-                    ),
-                  );
-                },
-              ),
             ],
           ),
         ),
@@ -334,7 +348,6 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('현재 위치: $_currentLocation', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              //TODO:여기 currentAddress 값을 그룹에 현재위치로써 서버에서 주고 받아야 해요
               Text('주소: $_currentAddress', style: const TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 10),
               Container(

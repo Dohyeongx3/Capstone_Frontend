@@ -1,17 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:http/http.dart' as http;
 
+import 'globals.dart';
 import 'main.dart';
 import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info.dart';
 import 'login.dart';
-import 'notification.dart';
 import 'setting.dart';
 
 class Shelter extends StatefulWidget {
@@ -26,15 +28,54 @@ class _ShelterState extends State<Shelter> {
   bool _isMapInitialized = false;
   int _selectedIndex = 0;
 
+  Map<String, dynamic>? UserData;
+
   String _currentAddress = '위치 확인 중...';
   String _thoroughfare = '';
   String _statusMessage = '';
   Color _statusColor = const Color(0xFF00BB6D);
   String _statusIcon = 'assets/shelter_safe.png';
-  String _currentState = "SAFE";
+  String? _currentState;
+
+
+  Future<void> fetchUserData() async {
+    final response = await http.post(
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/profile'),
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonEncode({ 'globalUid': globalUid }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        UserData = data;
+        _currentState = UserData?['status'];
+      });
+    } else {
+      print('사용자 정보 불러오기 실패');
+    }
+  }
 
   Position? _currentPosition;
 
+  Future<void> fetchShelters() async {
+    final response = await http.get(
+        Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/shelters')
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        shelterList = List<Map<String, dynamic>>.from(data['data']['items']);
+      });
+    } else {
+      print('대피소 불러오기 실패');
+    }
+  }
+
+  List<Map<String, dynamic>> shelterList = [];
+
+  /*
   // TODO:DB에서 대피소API에서 받아온 데이터 연결
   final List<Map<String, dynamic>> shelterList = [
     {
@@ -73,6 +114,7 @@ class _ShelterState extends State<Shelter> {
       'type': 1,
     },
   ];
+  */
 
   final List<String> shelterTypes = [
     '전체',
@@ -118,6 +160,8 @@ class _ShelterState extends State<Shelter> {
   @override
   void initState() {
     super.initState();
+    fetchUserData();
+    fetchShelters();
     _determinePosition().then((_) {
       setState(() {
         _isMapInitialized = true;
@@ -256,17 +300,6 @@ class _ShelterState extends State<Shelter> {
                   style: const TextStyle(fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NotificationPage(),
-                    ),
-                  );
-                },
               ),
             ],
           ),

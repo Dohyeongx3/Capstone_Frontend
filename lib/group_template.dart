@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'notification.dart';
 import 'globals.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,11 +8,13 @@ import 'dart:convert';
 class GroupPageTemplate extends StatefulWidget {
   final Map<String, dynamic> groupInfo;
   final List<Map<String, dynamic>> members;
+  final VoidCallback? onGroupChanged;
 
   const GroupPageTemplate({
     Key? key,
     required this.groupInfo,
     required this.members,
+    this.onGroupChanged,
   }) : super(key: key);
 
   @override
@@ -46,18 +47,6 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
             fontSize: 18,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationPage()),
-              );
-            },
-          ),
-          const SizedBox(width: 16),
-        ],
       ),
       body: _buildBody(context, groupInfo!, members),
     );
@@ -174,6 +163,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
         required bool isCurrentUser,
         required bool isCurrentUserLeader,
       }) {
+
     final bool showKickButton = isCurrentUserLeader && !isCurrentUser;
     final bool showLeaveButton = !isCurrentUserLeader && isCurrentUser;
 
@@ -195,7 +185,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: member['status'] == '안전' ? const Color(0xFF00BB6D) : const Color(0xFFFF6200),
+                  color: member['status'] == 'SAFE' ? const Color(0xFF00BB6D) : const Color(0xFFFF6200),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -228,13 +218,35 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
         // 내보내기 또는 나가기 버튼 (globalUid가 null이 아니고 조건에 맞을 때만)
         if (globalUid != null && (showKickButton || showLeaveButton))
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              final groupCode = widget.groupInfo['groupInviteCode'];
               if (showKickButton) {
-                // TODO: 클라이언트가 groupInfo의 groupinvitecode와 해당 멤버의 이름을 보내면 서버에서 해당 멤버 그룹에서 삭제
+                final response = await http.post(
+                  Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
+                  headers: { 'Content-Type': 'application/json' },
+                  body: jsonEncode({ 'groupCode': groupCode,'uId': member['uid'] }),
+                );
+                if (response.statusCode == 200) {
+                  print('그룹 내보내기 성공');
+                  widget.onGroupChanged?.call();
+                } else {
+                  print('그룹 내보내기 실패');
+                }
                 print('${member['name']} 내보내기');
-              } else if (showLeaveButton) {
-                // TODO: 클라이언트가 groupInfo의 groupinvitecode과 사용자의 이름을 보내면 서버에서 내 정보를 멤버 그룹에서 삭제
-                print('${member['name']} 나가기');
+              }
+              else if (showLeaveButton) {
+                final response = await http.post(
+                  Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
+                  headers: { 'Content-Type': 'application/json' },
+                  body: jsonEncode({ 'groupCode': groupCode,'uId': member['uid'] }),
+                );
+                if (response.statusCode == 200) {
+                  print('그룹 나가기 성공');
+                  widget.onGroupChanged?.call();
+                } else {
+                print('그룹 나가기 실패');
+                }
+              print('${member['name']} 나가기');
               }
             },
             child: Container(

@@ -4,7 +4,6 @@ import 'escape.dart';
 import 'group.dart';
 import 'home.dart';
 import 'info_datail.dart';
-import 'notification.dart';
 import 'setting.dart';
 
 class Info extends StatefulWidget {
@@ -148,17 +147,6 @@ class _InfoState extends State<Info> {
           const SizedBox(width: 10),
           const Text("재난 정보", style: TextStyle(fontSize: 18, color: Colors.black)),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationPage(),
-                ),
-              );
-            },
-          ),
         ],
       ),
     );
