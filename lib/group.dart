@@ -88,10 +88,11 @@ class _GroupState extends State<Group> {
       body: jsonEncode({ 'globalUid': globalUid }),
     );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+
+    if (data['success']) {
       setState(() {
-        groups = List<Map<String, dynamic>>.from(data);
+        groups = List<Map<String, dynamic>>.from(data['data']);
       });
     } else {
       print('그룹 목록 불러오기 실패');
