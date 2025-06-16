@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,7 +25,7 @@ class Shelter extends StatefulWidget {
 }
 
 class _ShelterState extends State<Shelter> {
-  late NaverMapController _mapController;
+  NaverMapController? _mapController;
   bool _isMapInitialized = false;
   int _selectedIndex = 0;
 
@@ -37,6 +38,7 @@ class _ShelterState extends State<Shelter> {
   String _statusIcon = 'assets/shelter_safe.png';
   String? _currentState;
 
+  List<NMarker> _shelterMarkers = [];
 
   Future<void> fetchUserData() async {
     final response = await http.post(
@@ -58,15 +60,34 @@ class _ShelterState extends State<Shelter> {
 
   Position? _currentPosition;
 
+  void _addShelterMarkers() {
+    if (_mapController == null || _shelterMarkers.isEmpty) return;
+
+    for (final marker in _shelterMarkers) {
+      _mapController!.addOverlay(marker);
+    }
+  }
+
   Future<void> fetchShelters() async {
     final response = await http.get(
-        Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/shelters')
+      Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/shelters'),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      final fetchedShelters = List<Map<String, dynamic>>.from(data['data']['items']);
+
       setState(() {
-        shelterList = List<Map<String, dynamic>>.from(data['data']['items']);
+        shelterList = fetchedShelters;
+        _shelterMarkers = shelterList.map((shelter) {
+          return NMarker(
+            id: shelter['name'],
+            position: NLatLng(shelter['lat'], shelter['lng']),
+            icon: NOverlayImage.fromAssetImage(
+              getShelterTypeMarkerImage(shelter['type']),
+            ),
+          );
+        }).toList();
       });
     } else {
       print('대피소 불러오기 실패');
@@ -124,6 +145,21 @@ class _ShelterState extends State<Shelter> {
     '지진해일대피소',
   ];
 
+  String getShelterTypeMarkerImage(int type) {
+    switch (type) {
+      case 1:
+        return 'assets/cold_shelter_marker.png';
+      case 2:
+        return 'assets/heat_shelter_marker.png';
+      case 3:
+        return 'assets/earthquake_shelter_marker.png';
+      case 4:
+        return 'assets/tsunami_shelter_marker.png';
+      default:
+        return 'assets/default_shelter_marker.png';
+    }
+  }
+
   int _selectedShelterIndex = 0; // 클래스 내에 추가 필요
 
   String getShelterTypeImage(int type) {
@@ -156,6 +192,20 @@ class _ShelterState extends State<Shelter> {
     }
   }
 
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const R = 6371000; // Earth radius in meters
+    final radLat1 = lat1 * (pi / 180);
+    final radLat2 = lat2 * (pi / 180);
+    final deltaLat = (lat2 - lat1) * (pi / 180);
+    final deltaLon = (lon2 - lon1) * (pi / 180);
+
+    final a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+        cos(radLat1) * cos(radLat2) *
+            sin(deltaLon / 2) * sin(deltaLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return R * c;
+  }
 
   @override
   void initState() {
@@ -278,6 +328,7 @@ class _ShelterState extends State<Shelter> {
 
   @override
   Widget build(BuildContext context) {
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
@@ -330,14 +381,13 @@ class _ShelterState extends State<Shelter> {
                   ? NaverMap(
                 options: NaverMapViewOptions(
                   initialCameraPosition: const NCameraPosition(
-                    target: NLatLng(37.5665, 126.9780), // 임시 기본 위치
+                    target: NLatLng(37.5665, 126.9780),
                     zoom: 16,
                   ),
                   locationButtonEnable: true,
                 ),
                 onMapReady: (controller) async {
                   _mapController = controller;
-                  print("네이버 맵 로딩됨!");
 
                   if (_currentPosition != null) {
                     final currentLatLng = NLatLng(
@@ -351,27 +401,28 @@ class _ShelterState extends State<Shelter> {
                         zoom: 16,
                       ),
                     );
-                  } else {
-                    print("현재 위치 정보가 없습니다.");
                   }
+
+                  _addShelterMarkers();
                 },
               )
                   : const Center(child: CircularProgressIndicator()),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                border: const Border(top: BorderSide(color: Colors.grey)),
+                border: Border(top: BorderSide(color: Colors.grey)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        '대피소 경로 안내',
+                        '대피소 안내',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 4),
@@ -381,7 +432,15 @@ class _ShelterState extends State<Shelter> {
                       ),
                     ],
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.grey),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const [
+                      Text('한파쉼터', style: TextStyle(fontSize: 11, color: Color(0xFF0583F2))),
+                      Text('무더위쉼터', style: TextStyle(fontSize: 11, color: Color(0xFFF24405))),
+                      Text('지진옥외대피소', style: TextStyle(fontSize: 11, color: Color(0xFF038C4C))),
+                      Text('지진해일대피소', style: TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -399,7 +458,6 @@ class _ShelterState extends State<Shelter> {
                           onTap: () {
                             setState(() {
                               _selectedShelterIndex = index;
-                              // 필터 로직은 추후 구현
                             });
                           },
                           child: Container(
@@ -433,76 +491,115 @@ class _ShelterState extends State<Shelter> {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: shelterList.length,
-                itemBuilder: (context, index) {
-                  final shelter = shelterList[index];
-                  final type = shelter['type'];
 
-                  // 필터링: '전체'가 아니면 선택된 shelterType과 다르면 스킵
-                  if (_selectedShelterIndex != 0 && _selectedShelterIndex != type) {
-                    return const SizedBox.shrink();
+            // 정렬된 대피소 리스트
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  final sortedShelters = List<Map<String, dynamic>>.from(shelterList);
+
+                  if (_currentPosition != null) {
+                    sortedShelters.sort((a, b) {
+                      final distA = calculateDistance(
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                        a['lat'],
+                        a['lng'],
+                      );
+                      final distB = calculateDistance(
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
+                        b['lat'],
+                        b['lng'],
+                      );
+                      return distA.compareTo(distB);
+                    });
                   }
 
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
+                  return ListView.builder(
                     padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${index + 1}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    itemCount: sortedShelters.length,
+                    itemBuilder: (context, index) {
+                      final shelter = sortedShelters[index];
+                      final type = shelter['type'];
+
+                      if (_selectedShelterIndex != 0 && _selectedShelterIndex != type) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return GestureDetector(
+                        onTap: () {
+                          final lat = shelter['lat'];
+                          final lng = shelter['lng'];
+                          if (_mapController != null) {
+                            _mapController!.updateCamera(
+                              NCameraUpdate.scrollAndZoomTo(
+                                target: NLatLng(lat, lng),
+                                zoom: 17,
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(getShelterTypeImage(type)),
-                          backgroundColor: Colors.white,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
                               Text(
-                                shelter['name'],
+                                '${index + 1}',
                                 style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                shelter['address'],
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey,
-                                ),
+                              const SizedBox(width: 12),
+                              CircleAvatar(
+                                radius: 24,
+                                backgroundImage: AssetImage(getShelterTypeImage(type)),
+                                backgroundColor: Colors.white,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                getShelterTypeLabel(type),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      shelter['name'],
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      shelter['address'],
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      getShelterTypeLabel(type),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   );
                 },
               ),

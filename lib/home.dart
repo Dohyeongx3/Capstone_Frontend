@@ -174,10 +174,11 @@ class _HomeState extends State<Home> {
         statusLabel = "CHECKING";
         break;
       default:
-        backgroundColor = Colors.grey;
-        imageAsset = '';
-        statusText = "-";
-        statusLabel = "-";
+        backgroundColor = const Color(0xFF007EFF);
+        imageAsset = 'assets/checking.png';
+        statusText = "상태 체크중";
+        statusLabel = "CHECKING";
+        break;
     }
 
     return PopScope(

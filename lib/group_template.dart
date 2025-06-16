@@ -8,12 +8,14 @@ import 'dart:convert';
 class GroupPageTemplate extends StatefulWidget {
   final Map<String, dynamic> groupInfo;
   final List<Map<String, dynamic>> members;
+  final List<Map<String, dynamic>> groups;
   final VoidCallback? onGroupChanged;
 
   const GroupPageTemplate({
     Key? key,
     required this.groupInfo,
     required this.members,
+    required this.groups,
     this.onGroupChanged,
   }) : super(key: key);
 
@@ -22,16 +24,59 @@ class GroupPageTemplate extends StatefulWidget {
 }
 
 class _GroupPageTemplateState extends State<GroupPageTemplate> {
+  late Map<String, dynamic> groupInfo;
+  late List<Map<String, dynamic>> members;
+
   @override
   void initState() {
     super.initState();
+    groupInfo = Map<String, dynamic>.from(widget.groupInfo);
+    members = List<Map<String, dynamic>>.from(widget.members);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onGroupChanged?.call();
+    });
   }
 
+  Future<void> fetchGroupData(List<Map<String, dynamic>> groups) async {
+    final groupCode = groupInfo['groupinviteCode'];
+
+    try {
+      // 서버 getGroupInfo API가 없으므로, 클라이언트에 있는 groups 리스트에서 찾음
+      final foundGroup = groups.firstWhere(
+            (g) => g['groupinviteCode'] == groupCode,
+        orElse: () => {},
+      );
+
+      if (foundGroup.isNotEmpty) {
+        // 그룹 정보와 멤버 리스트를 업데이트 (members가 foundGroup 안에 있어야 함)
+        setState(() {
+          groupInfo = Map<String, dynamic>.from(foundGroup);
+          members = List<Map<String, dynamic>>.from(foundGroup['members'] ?? []);
+        });
+
+        widget.onGroupChanged?.call();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('해당 그룹 정보를 찾을 수 없습니다'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('그룹 정보 불러오기 중 오류가 발생했습니다'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final groupInfo = widget.groupInfo;
-    final members = widget.members;
+    final groupInfo = this.groupInfo;
+    final members = this.members;
     final String? currentUserUid = globalUid;
 
     return Scaffold(
@@ -47,6 +92,12 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
             fontSize: 18,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Color(0xFF4B4B4B)),
+            onPressed: () => fetchGroupData(widget.groups),
+          ),
+        ],
       ),
       body: _buildBody(context, groupInfo!, members),
     );
@@ -167,6 +218,7 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
     final bool showKickButton = isCurrentUserLeader && !isCurrentUser;
     final bool showLeaveButton = !isCurrentUserLeader && isCurrentUser;
 
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -219,16 +271,18 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
         if (globalUid != null && (showKickButton || showLeaveButton))
           GestureDetector(
             onTap: () async {
-              final groupCode = widget.groupInfo['groupInviteCode'];
+              final groupCode = widget.groupInfo['groupinviteCode'];
               if (showKickButton) {
                 final response = await http.post(
-                  Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
+                  Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
                   headers: { 'Content-Type': 'application/json' },
                   body: jsonEncode({ 'groupCode': groupCode,'uId': member['uid'] }),
                 );
                 if (response.statusCode == 200) {
-                  print('그룹 내보내기 성공');
-                  widget.onGroupChanged?.call();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${member['name']} 내보내기 성공')),
+                  );
+                  await fetchGroupData(widget.groups);
                 } else {
                   print('그룹 내보내기 실패');
                 }
@@ -236,15 +290,18 @@ class _GroupPageTemplateState extends State<GroupPageTemplate> {
               }
               else if (showLeaveButton) {
                 final response = await http.post(
-                  Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
+                  Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/exitGroup'),
                   headers: { 'Content-Type': 'application/json' },
                   body: jsonEncode({ 'groupCode': groupCode,'uId': member['uid'] }),
                 );
                 if (response.statusCode == 200) {
-                  print('그룹 나가기 성공');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('그룹에서 나가기 성공')),
+                  );
+                  Navigator.pop(context); // 나가면 화면 종료
                   widget.onGroupChanged?.call();
                 } else {
-                print('그룹 나가기 실패');
+                  print('그룹 나가기 실패');
                 }
               print('${member['name']} 나가기');
               }

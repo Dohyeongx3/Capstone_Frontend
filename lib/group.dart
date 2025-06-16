@@ -20,6 +20,7 @@ class Group extends StatefulWidget {
 
 class _GroupState extends State<Group> {
   int _selectedIndex = 3;
+  String inviteCode = "";
 
   void _onItemTapped(int index) {
     int previousIndex = _selectedIndex;  // 화면을 전환하기 전에 현재 selectedIndex를 저장
@@ -95,9 +96,18 @@ class _GroupState extends State<Group> {
         groups = List<Map<String, dynamic>>.from(data['data']);
       });
     } else {
-      print('그룹 목록 불러오기 실패');
+      // 스낵바로 실패 메시지 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('그룹 목록 불러오기 실패 (오류 코드: ${response.statusCode})'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
+
+
 
   /*
   //TODO: 클라이언트에서 globalUid 보내면 서버에서 이름,생년월일,전화번호,위험상태 받아오기(setting.dart,editprofile.dart,group.dart 공통)
@@ -295,9 +305,8 @@ class _GroupState extends State<Group> {
     );
 
     if (groupName != null && groupName.isNotEmpty) {
-      String inviteCode = "";
       final response = await http.post(
-        Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/createGroup'),
+        Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/createGroup'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({ 'groupName': groupName,'uId': globalUid }),
       );
@@ -307,8 +316,16 @@ class _GroupState extends State<Group> {
         setState(() {
           inviteCode = data['inviteCode'];
         });
+        fetchGroups();
       } else {
-        print('그룹 목록 불러오기 실패');
+        // 스낵바로 실패 메시지 표시
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('그룹 목록 불러오기 실패 (오류 코드: ${response.statusCode})'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
       await showGroupCreatedDialog(context, inviteCode);
     } else {
@@ -551,7 +568,7 @@ class _GroupState extends State<Group> {
 
     if (result != null && result.isNotEmpty) {
       final response = await http.post(
-        Uri.parse('http://capstoneserver-etkm.onrender.com/api/group/joinGroup'),
+        Uri.parse('https://capstoneserver-etkm.onrender.com/api/group/joinGroup'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({ 'groupCode': result ,'uId': globalUid }),
       );
@@ -565,9 +582,6 @@ class _GroupState extends State<Group> {
       } else {
         print('그룹 참가 실패');
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('입력한 그룹코드: $result')),
-      );
     }
   }
 
@@ -597,14 +611,14 @@ class _GroupState extends State<Group> {
         }
       },
       child: Scaffold(
-        appBar: _buildAppBar(),
+        appBar: _buildAppBar(context),
         body: _buildBody(),
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 1,
@@ -628,6 +642,18 @@ class _GroupState extends State<Group> {
           const Spacer(),
         ],
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Color(0xFF4B4B4B)),
+          onPressed: () {
+            fetchGroups();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Group(),),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -893,6 +919,7 @@ class _GroupState extends State<Group> {
                             builder: (_) => GroupPageTemplate(
                               groupInfo: group,
                               members: List<Map<String, dynamic>>.from(group['members']),
+                              groups: groups,
                               onGroupChanged: fetchGroups,
                             ),
                           ),
