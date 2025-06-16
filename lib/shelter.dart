@@ -438,7 +438,7 @@ class _ShelterState extends State<Shelter> {
                       Text('한파쉼터', style: TextStyle(fontSize: 11, color: Color(0xFF0583F2))),
                       Text('무더위쉼터', style: TextStyle(fontSize: 11, color: Color(0xFFF24405))),
                       Text('지진옥외대피소', style: TextStyle(fontSize: 11, color: Color(0xFF038C4C))),
-                      Text('지진해일대피소', style: TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
+                      Text('지진해일대피소', style: TextStyle(fontSize: 11, color: Color(0xFF735032))),
                     ],
                   ),
                 ],
